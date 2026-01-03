@@ -55,6 +55,7 @@ model User {
   name          String
   email         String?     @unique
   phone         String?
+  password      String
   role          UserRole
   departmentId  String?
   department    Department? @relation(fields: [departmentId], references: [id])
@@ -87,6 +88,7 @@ model Grievance {
   category          String?
   priority          PriorityLevel?
   status            GrievanceStatus  @default(PENDING)
+  imageUrl          String?
 
   departmentId      String?
   department        Department?      @relation(fields: [departmentId], references: [id])
