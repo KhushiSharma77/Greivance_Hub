@@ -10,12 +10,16 @@
     "start": "bun run dist/index.js"
   },
   "dependencies": {
-    "express": "^5.1.0",
+    "@google/generative-ai": "^0.24.1",
+    "@team-call-of-code/db": "workspace:*",
+    "@team-call-of-code/env": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.10",
     "cors": "^2.8.5",
     "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@team-call-of-code/env": "workspace:*",
-    "@team-call-of-code/db": "workspace:*"
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
