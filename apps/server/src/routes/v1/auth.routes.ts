@@ -2,14 +2,14 @@ import { Router } from "express";
 import { authLimiter } from "../../middleware/rate-limit";
 import { asyncHandler } from "../../lib/error-handler";
 
-const router = Router();
+const authRouter:Router = Router();
 
 /**
  * @route   POST /api/v1/auth/register
  * @desc    Register a new user
  * @access  Public
  */
-router.post(
+authRouter.post(
     "/register",
     authLimiter,
     asyncHandler(async (req, res) => {
@@ -28,7 +28,7 @@ router.post(
  * @desc    Login user
  * @access  Public
  */
-router.post(
+authRouter.post(
     "/login",
     authLimiter,
     asyncHandler(async (req, res) => {
@@ -47,7 +47,7 @@ router.post(
  * @desc    Refresh access token
  * @access  Public
  */
-router.post(
+authRouter.post(
     "/refresh",
     authLimiter,
     asyncHandler(async (req, res) => {
@@ -66,7 +66,7 @@ router.post(
  * @desc    Logout user
  * @access  Private
  */
-router.post(
+authRouter.post(
     "/logout",
     asyncHandler(async (req, res) => {
         // TODO: Implement logout logic
@@ -79,4 +79,4 @@ router.post(
     }),
 );
 
-export default router;
+export default authRouter;

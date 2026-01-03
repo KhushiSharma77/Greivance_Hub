@@ -3,18 +3,18 @@ import { authenticate } from "../../middleware/authentication";
 import { isOfficer } from "../../middleware/authorization";
 import { asyncHandler } from "../../lib/error-handler";
 
-const router = Router();
+const officerRouter:Router = Router();
 
 // All officer routes require authentication
-router.use(authenticate);
-router.use(isOfficer);
+officerRouter.use(authenticate);
+officerRouter.use(isOfficer);
 
 /**
  * @route   GET /api/v1/officer/grievances
  * @desc    Get all grievances assigned to the officer
  * @access  Private (Officer)
  */
-router.get(
+officerRouter.get(
     "/grievances",
     asyncHandler(async (req, res) => {
         // TODO: Implement get assigned grievances logic
@@ -32,7 +32,7 @@ router.get(
  * @desc    Get a specific grievance by ID (only if assigned to the officer)
  * @access  Private (Officer)
  */
-router.get(
+officerRouter.get(
     "/grievances/:id",
     asyncHandler(async (req, res) => {
         // TODO: Implement get grievance by ID logic
@@ -50,7 +50,7 @@ router.get(
  * @desc    Update grievance status (only if assigned to the officer)
  * @access  Private (Officer)
  */
-router.patch(
+officerRouter.patch(
     "/grievances/:id/status",
     asyncHandler(async (req, res) => {
         // TODO: Implement update grievance status logic
@@ -68,7 +68,7 @@ router.patch(
  * @desc    Add a comment to a grievance
  * @access  Private (Officer)
  */
-router.post(
+officerRouter.post(
     "/grievances/:id/comments",
     asyncHandler(async (req, res) => {
         // TODO: Implement add comment logic
@@ -86,7 +86,7 @@ router.post(
  * @desc    Get officer dashboard statistics
  * @access  Private (Officer)
  */
-router.get(
+officerRouter.get(
     "/dashboard/stats",
     asyncHandler(async (req, res) => {
         // TODO: Implement dashboard stats logic
@@ -99,4 +99,4 @@ router.get(
     }),
 );
 
-export default router;
+export default officerRouter;

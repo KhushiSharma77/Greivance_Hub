@@ -3,18 +3,18 @@ import { authenticate } from "../../middleware/authentication";
 import { isAdmin } from "../../middleware/authorization";
 import { asyncHandler } from "../../lib/error-handler";
 
-const router = Router();
+const adminRouter:Router = Router();
 
 // All admin routes require authentication
-router.use(authenticate);
-router.use(isAdmin);
+adminRouter.use(authenticate);
+adminRouter.use(isAdmin);
 
 /**
  * @route   GET /api/v1/admin/grievances
  * @desc    Get all grievances (with filtering and pagination)
  * @access  Private (Admin)
  */
-router.get(
+adminRouter.get(
     "/grievances",
     asyncHandler(async (req, res) => {
         // TODO: Implement get all grievances logic
@@ -32,7 +32,7 @@ router.get(
  * @desc    Get a specific grievance by ID
  * @access  Private (Admin)
  */
-router.get(
+adminRouter.get(
     "/grievances/:id",
     asyncHandler(async (req, res) => {
         // TODO: Implement get grievance by ID logic
@@ -50,7 +50,7 @@ router.get(
  * @desc    Assign a grievance to an officer
  * @access  Private (Admin)
  */
-router.patch(
+adminRouter.patch(
     "/grievances/:id/assign",
     asyncHandler(async (req, res) => {
         // TODO: Implement assign grievance logic
@@ -68,7 +68,7 @@ router.patch(
  * @desc    Assign a grievance to a department
  * @access  Private (Admin)
  */
-router.patch(
+adminRouter.patch(
     "/grievances/:id/department",
     asyncHandler(async (req, res) => {
         // TODO: Implement assign to department logic
@@ -86,7 +86,7 @@ router.patch(
  * @desc    Get all departments
  * @access  Private (Admin)
  */
-router.get(
+adminRouter.get(
     "/departments",
     asyncHandler(async (req, res) => {
         // TODO: Implement get departments logic
@@ -104,7 +104,7 @@ router.get(
  * @desc    Create a new department
  * @access  Private (Admin)
  */
-router.post(
+adminRouter.post(
     "/departments",
     asyncHandler(async (req, res) => {
         // TODO: Implement create department logic
@@ -122,7 +122,7 @@ router.post(
  * @desc    Update a department
  * @access  Private (Admin)
  */
-router.patch(
+adminRouter.patch(
     "/departments/:id",
     asyncHandler(async (req, res) => {
         // TODO: Implement update department logic
@@ -140,7 +140,7 @@ router.patch(
  * @desc    Delete a department
  * @access  Private (Admin)
  */
-router.delete(
+adminRouter.delete(
     "/departments/:id",
     asyncHandler(async (req, res) => {
         // TODO: Implement delete department logic
@@ -158,7 +158,7 @@ router.delete(
  * @desc    Get all users (with filtering and pagination)
  * @access  Private (Admin)
  */
-router.get(
+adminRouter.get(
     "/users",
     asyncHandler(async (req, res) => {
         // TODO: Implement get all users logic
@@ -176,7 +176,7 @@ router.get(
  * @desc    Update user role
  * @access  Private (Admin)
  */
-router.patch(
+adminRouter.patch(
     "/users/:id/role",
     asyncHandler(async (req, res) => {
         // TODO: Implement update user role logic
@@ -194,7 +194,7 @@ router.patch(
  * @desc    Get admin dashboard statistics
  * @access  Private (Admin)
  */
-router.get(
+adminRouter.get(
     "/dashboard/stats",
     asyncHandler(async (req, res) => {
         // TODO: Implement dashboard stats logic
@@ -207,4 +207,4 @@ router.get(
     }),
 );
 
-export default router;
+export default adminRouter;

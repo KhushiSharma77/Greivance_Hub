@@ -2,22 +2,22 @@ import { Router } from "express";
 import { authenticate } from "../../middleware/authentication";
 import { isCitizen } from "../../middleware/authorization";
 import { asyncHandler } from "../../lib/error-handler";
-import { createLimiter } from "../../middleware/rate-limit";
+import { grievanceLimiter } from "../../middleware/rate-limit";
 
-const router = Router();
+const citizenRouter:Router = Router();
 
 // All citizen routes require authentication
-router.use(authenticate);
-router.use(isCitizen);
+citizenRouter.use(authenticate);
+citizenRouter.use(isCitizen);
 
 /**
  * @route   POST /api/v1/citizen/grievances
  * @desc    Create a new grievance
  * @access  Private (Citizen)
  */
-router.post(
+citizenRouter.post(
     "/grievances",
-    createLimiter,
+    grievanceLimiter,
     asyncHandler(async (req, res) => {
         // TODO: Implement grievance creation logic
         res.status(501).json({
@@ -34,7 +34,7 @@ router.post(
  * @desc    Get all grievances for the current citizen
  * @access  Private (Citizen)
  */
-router.get(
+citizenRouter.get(
     "/grievances",
     asyncHandler(async (req, res) => {
         // TODO: Implement get user grievances logic
@@ -52,7 +52,7 @@ router.get(
  * @desc    Get a specific grievance by ID (only if it belongs to the user)
  * @access  Private (Citizen)
  */
-router.get(
+citizenRouter.get(
     "/grievances/:id",
     asyncHandler(async (req, res) => {
         // TODO: Implement get grievance by ID logic
@@ -70,7 +70,7 @@ router.get(
  * @desc    Update a grievance (only if it belongs to the user and is in PENDING status)
  * @access  Private (Citizen)
  */
-router.patch(
+citizenRouter.patch(
     "/grievances/:id",
     asyncHandler(async (req, res) => {
         // TODO: Implement update grievance logic
@@ -88,7 +88,7 @@ router.patch(
  * @desc    Delete a grievance (only if it belongs to the user and is in PENDING status)
  * @access  Private (Citizen)
  */
-router.delete(
+citizenRouter.delete(
     "/grievances/:id",
     asyncHandler(async (req, res) => {
         // TODO: Implement delete grievance logic
@@ -101,4 +101,4 @@ router.delete(
     }),
 );
 
-export default router;
+export default citizenRouter;
