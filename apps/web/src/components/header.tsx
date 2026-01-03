@@ -2,38 +2,44 @@
 import Link from "next/link";
 
 import { ModeToggle } from "./mode-toggle";
+import { Button } from "./ui/button";
+import { ArrowLeft } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
-  const links = [{ to: "/", label: "Home" }] as const;
+  const pathname = usePathname();
+
+  // Don't show header on landing page (it has its own navbar)
+  if (pathname === "/") {
+    return null;
+  }
+
+  const isAuthPage = pathname?.startsWith("/login") || pathname?.startsWith("/signup");
 
   return (
-    <header className="sticky top-0 z-40">
-      {/* Glass background */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-white/70 backdrop-blur-xl" />
-        <div className="absolute inset-0 border-b border-white/40" />
-
-        <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          {/* Navigation */}
-          <nav className="flex items-center gap-6">
-            {links.map(({ to, label }) => {
-              return (
-                <Link
-                  key={to}
-                  href={to}
-                  className="relative text-sm font-medium text-gray-700 transition-colors duration-200 hover:text-purple-700"
-                >
-                  {label}
-                  <span className="absolute -bottom-1 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 hover:w-full" />
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            <ModeToggle />
+    <header className="sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-950/70 backdrop-blur-xl">
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        {/* Logo */}
+        <Link href="/" className="group flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 shadow-lg transition-all group-hover:shadow-xl">
+            <span className="text-xl font-bold text-white">G</span>
           </div>
+          <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+            GrievanceHub
+          </span>
+        </Link>
+
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          <ModeToggle />
+          {isAuthPage && (
+            <Link href="/">
+              <Button variant="ghost" className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>
