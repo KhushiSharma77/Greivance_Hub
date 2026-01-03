@@ -1,3 +1,6 @@
+# GFGBQ-Team-call-of-code
+Repository for call of code - Vibe Coding Hackathon
+
 # team-call-of-code
 
 This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Express, and more.
