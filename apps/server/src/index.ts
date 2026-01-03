@@ -10,6 +10,7 @@ export const supabase = createClient(
   env.SUPABASE_URL,
   env.SUPABASE_SERVICE_ROLE_KEY,
 );
+import grievanceRoutes from "./routes/v1/processor.routes"
 
 const app = express();
 
@@ -27,6 +28,8 @@ const upload = multer({
   limits: { fileSize: 2 * 1024 * 1024 }
 });
 
+
+app.use("/api/grievance",grievanceRoutes );
 
 app.get("/", (_req, res) => {
   res.status(200).send("OK");

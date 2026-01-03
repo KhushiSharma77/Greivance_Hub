@@ -10,9 +10,9 @@
     "start": "bun run dist/index.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@team-call-of-code/db": "workspace:*",
     "@team-call-of-code/env": "workspace:*",
-    "@google/generative-ai": "^0.24.1",
     "@types/jsonwebtoken": "^9.0.10",
     "cors": "^2.8.5",
     "dotenv": "catalog:",
