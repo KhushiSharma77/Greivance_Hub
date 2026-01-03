@@ -9,10 +9,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// ================================
-// ENUMS
-// ================================
-
 enum UserRole {
   citizen
   officer
@@ -46,15 +42,13 @@ enum JobStatus {
   FAILED
 }
 
-// ================================
-// MODELS
-// ================================
 
 model User {
   id            String      @id @default(uuid())
   name          String
   email         String?     @unique
   phone         String?
+  password      String
   role          UserRole
   departmentId  String?
   department    Department? @relation(fields: [departmentId], references: [id])
@@ -68,7 +62,7 @@ model User {
 model Department {
   id          String       @id @default(uuid())
   name        String
-  slaHours    Int
+  City        String
 
   users       User[]
   grievances  Grievance[]
@@ -87,6 +81,7 @@ model Grievance {
   category          String?
   priority          PriorityLevel?
   status            GrievanceStatus  @default(PENDING)
+  imageUrl          String?
 
   departmentId      String?
   department        Department?      @relation(fields: [departmentId], references: [id])
@@ -107,9 +102,6 @@ model Grievance {
   updatedAt         DateTime          @updatedAt
 }
 
-// ================================
-// AI METADATA (Gemini Output)
-// ================================
 
 model GrievanceAIMetadata {
   grievanceId   String       @id
