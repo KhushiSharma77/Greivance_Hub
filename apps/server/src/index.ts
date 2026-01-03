@@ -22,15 +22,11 @@ app.use(
 
 app.use(express.json());
 
-<<<<<<< HEAD
-app.use("/api/grievance",grievanceRoutes );
-=======
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 2 * 1024 * 1024 }
 });
 
->>>>>>> fe96cc41ba8c0924f3561ef12bbe142df1c451d8
 
 app.get("/", (_req, res) => {
   res.status(200).send("OK");
