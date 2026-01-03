@@ -3,8 +3,15 @@ import { authenticate } from "../../middleware/authentication";
 import { isCitizen } from "../../middleware/authorization";
 import { asyncHandler } from "../../lib/error-handler";
 import { grievanceLimiter } from "../../middleware/rate-limit";
+import { validateBody, validateParams } from "../../middleware/validate";
+import {
+    createGrievanceSchema,
+    updateGrievanceSchema,
+    grievanceIdSchema,
+} from "../../types/grievance.types";
+import * as grievanceService from "../../services/grievance.service";
 
-const citizenRouter:Router = Router();
+const citizenRouter: Router = Router();
 
 // All citizen routes require authentication
 citizenRouter.use(authenticate);
@@ -18,13 +25,17 @@ citizenRouter.use(isCitizen);
 citizenRouter.post(
     "/grievances",
     grievanceLimiter,
+    validateBody(createGrievanceSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement grievance creation logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Create grievance endpoint not implemented yet",
-            },
+        const grievance = await grievanceService.createGrievance({
+            userId: req.user!.id,
+            ...req.body,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Grievance created successfully",
+            data: grievance,
         });
     }),
 );
@@ -37,12 +48,14 @@ citizenRouter.post(
 citizenRouter.get(
     "/grievances",
     asyncHandler(async (req, res) => {
-        // TODO: Implement get user grievances logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get grievances endpoint not implemented yet",
-            },
+        const grievances = await grievanceService.getGrievancesByUserId(
+            req.user!.id,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Grievances retrieved successfully",
+            data: grievances,
         });
     }),
 );
@@ -54,13 +67,16 @@ citizenRouter.get(
  */
 citizenRouter.get(
     "/grievances/:id",
+    validateParams(grievanceIdSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement get grievance by ID logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get grievance by ID endpoint not implemented yet",
-            },
+        const grievance = await grievanceService.getGrievanceById(
+            req.params.id!,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Grievance retrieved successfully",
+            data: grievance,
         });
     }),
 );
@@ -72,13 +88,19 @@ citizenRouter.get(
  */
 citizenRouter.patch(
     "/grievances/:id",
+    validateParams(grievanceIdSchema),
+    validateBody(updateGrievanceSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement update grievance logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Update grievance endpoint not implemented yet",
-            },
+        const grievance = await grievanceService.updateGrievance(
+            req.params.id!,
+            req.user!.id,
+            req.body,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Grievance updated successfully",
+            data: grievance,
         });
     }),
 );
@@ -90,13 +112,13 @@ citizenRouter.patch(
  */
 citizenRouter.delete(
     "/grievances/:id",
+    validateParams(grievanceIdSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement delete grievance logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Delete grievance endpoint not implemented yet",
-            },
+        await grievanceService.deleteGrievance(req.params.id!, req.user!.id);
+
+        res.status(200).json({
+            success: true,
+            message: "Grievance deleted successfully",
         });
     }),
 );

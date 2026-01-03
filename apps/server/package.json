@@ -10,10 +10,7 @@
     "start": "bun run dist/index.js"
   },
   "dependencies": {
-<<<<<<< HEAD
-=======
     "@google/generative-ai": "^0.24.1",
->>>>>>> origin
     "@team-call-of-code/db": "workspace:*",
     "@team-call-of-code/env": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10",
@@ -22,18 +19,18 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",
     "jsonwebtoken": "^9.0.3",
-<<<<<<< HEAD
+    "multer": "^2.0.2",
     "pino": "^10.1.0",
-=======
->>>>>>> origin
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1",
-    "@types/cors": "^2.8.17",
+    "@team-call-of-code/config": "workspace:*",
     "@types/bun": "catalog:",
-    "typescript": "catalog:",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
     "tsdown": "^0.16.5",
-    "@team-call-of-code/config": "workspace:*"
+    "typescript": "catalog:"
   }
 }
