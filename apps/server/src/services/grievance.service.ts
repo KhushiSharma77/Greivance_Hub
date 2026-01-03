@@ -1,5 +1,9 @@
 import prisma from "@team-call-of-code/db";
 import { ForbiddenError, NotFoundError } from "../lib/error-handler";
+import { uploadImage } from "../utils/imageUtils";
+import { supabase } from "../index"; 
+
+type MulterFile = Express.Multer.File;
 
 interface CreateGrievanceData {
     userId: string;
@@ -31,7 +35,13 @@ async function checkOwnership(grievanceId: string, userId: string): Promise<void
 /**
  * Create a new grievance
  */
-export async function createGrievance(data: CreateGrievanceData) {
+export async function createGrievance(data: CreateGrievanceData, file: MulterFile) {
+
+    let imageUrl: string | undefined;
+    if (file) {
+      imageUrl = await uploadImage(supabase, file, "Grievance");
+    }
+
     const grievance = await prisma.grievance.create({
         data: {
             userId: data.userId,
@@ -39,7 +49,7 @@ export async function createGrievance(data: CreateGrievanceData) {
             category: data.category,
             latitude: data.latitude,
             longitude: data.longitude,
-            imageUrl: data.imageUrl,
+            imageUrl: imageUrl,
             status: "PENDING",
         },
         include: {
@@ -116,6 +126,7 @@ export async function getGrievanceById(grievanceId: string) {
 export async function updateGrievance(
     grievanceId: string,
     userId: string,
+    file: MulterFile,
     data: UpdateGrievanceData,
 ) {
     await checkOwnership(grievanceId, userId);
@@ -123,11 +134,21 @@ export async function updateGrievance(
     // Check if grievance is in PENDING status
     const existingGrievance = await prisma.grievance.findUnique({
         where: { id: grievanceId },
-        select: { status: true },
+        select: { status: true,
+            imageUrl: true
+        },
     });
 
     if (existingGrievance?.status !== "PENDING") {
         throw new ForbiddenError("Only pending grievances can be updated");
+    }
+
+    let imageUrl: string | undefined;
+    if (file) {
+      const oldImage = existingGrievance.imageUrl;
+
+      if(oldImage) imageUrl = await uploadImage(supabase, file, "Grievance", oldImage);
+      else imageUrl = await uploadImage(supabase, file, "Grievance");
     }
 
     const grievance = await prisma.grievance.update({

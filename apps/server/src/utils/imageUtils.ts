@@ -28,14 +28,9 @@ export async function uploadImage(
   fileUrl?: string,
 ): Promise<string> {
   const mime = file.mimetype;
-  // if (!mime) throw new ApiError("File type is missing", 400);
   if (!mime) throw new Error("File type is missing");
   const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (!allowedTypes.includes(mime)) {
-    // throw new ApiError(
-    //   "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.",
-    //   400,
-    // );
        throw new Error(
       "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.");
   }
