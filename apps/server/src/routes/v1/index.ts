@@ -8,10 +8,9 @@ import officerRouter from "./officer.routes";
 
 export default function routes(upload: Multer, supabase: SupabaseClient) {
   const router:Router = Router();
+  
   router.use('/admin', adminRouter)
-
   router.use('/auth',authRouter)
-
   router.use('/citizen',citizenRouter);
   router.use('/officer',officerRouter);
 
