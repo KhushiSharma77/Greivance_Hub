@@ -9,8 +9,120 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id Int @default(autoincrement()) @id 
-  name String
-  phone String
+// ================================
+// ENUMS
+// ================================
+
+enum UserRole {
+  citizen
+  officer
+  admin
 }
+
+enum GrievanceStatus {
+  PENDING
+  ANALYZED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum PriorityLevel {
+  Low
+  Medium
+  High
+}
+
+enum SentimentType {
+  Positive
+  Neutral
+  Negative
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// ================================
+// MODELS
+// ================================
+
+model User {
+  id            String      @id @default(uuid())
+  name          String
+  email         String?     @unique
+  phone         String?
+  role          UserRole
+  departmentId  String?
+  department    Department? @relation(fields: [departmentId], references: [id])
+
+  grievances    Grievance[] @relation("CitizenGrievances")
+  assignedJobs  Grievance[] @relation("OfficerAssignments")
+
+  createdAt     DateTime    @default(now())
+}
+
+model Department {
+  id          String       @id @default(uuid())
+  name        String
+  slaHours    Int
+
+  users       User[]
+  grievances  Grievance[]
+
+  createdAt  DateTime     @default(now())
+}
+
+model Grievance {
+  id                String           @id @default(uuid())
+  userId            String
+  user              User             @relation("CitizenGrievances", fields: [userId], references: [id])
+
+  originalText      String
+  translatedText    String?
+
+  category          String?
+  priority          PriorityLevel?
+  status            GrievanceStatus  @default(PENDING)
+
+  departmentId      String?
+  department        Department?      @relation(fields: [departmentId], references: [id])
+
+  assignedOfficerId String?
+  assignedOfficer   User?            @relation("OfficerAssignments", fields: [assignedOfficerId], references: [id])
+
+  duplicateOfId     String?
+  duplicateOf       Grievance?        @relation("DuplicateRelation", fields: [duplicateOfId], references: [id])
+  duplicates        Grievance[]       @relation("DuplicateRelation")
+
+  latitude          Float?
+  longitude         Float?
+
+  aiMetadata        GrievanceAIMetadata?
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+// ================================
+// AI METADATA (Gemini Output)
+// ================================
+
+model GrievanceAIMetadata {
+  grievanceId   String       @id
+  grievance     Grievance    @relation(fields: [grievanceId], references: [id], onDelete: Cascade)
+
+  urgency       Int?
+  severity      Int?
+  sentiment     SentimentType?
+  confidence    Float?
+
+  similarityScore Float?
+  isDuplicate     Boolean    @default(false)
+
+  analyzedAt    DateTime     @default(now())
+}
+
