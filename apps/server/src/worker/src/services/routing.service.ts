@@ -1,7 +1,7 @@
 import type {
     CreateGrievanceInput,
     GrievanceDTO,
-} from "@/types/Grievance";
+} from "@/types/grievance";
 import prisma from "@team-call-of-code/db";
 
 export async function createGrievance(

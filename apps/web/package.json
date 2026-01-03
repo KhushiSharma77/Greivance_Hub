@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@radix-ui/react-tabs": "^1.1.1",
     "@base-ui/react": "^1.0.0",
     "@tanstack/react-form": "^1.27.3",
     "babel-plugin-react-compiler": "^1.0.0",

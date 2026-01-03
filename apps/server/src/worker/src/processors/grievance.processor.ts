@@ -1,6 +1,6 @@
 import { routeGrievanceToDepartment } from "./routing.processor";
 
-import type { GrievanceDTO, PriorityLevel } from "@/types/Grievance";
+import type { GrievanceDTO, PriorityLevel } from "@/types/grievance";
 import { createGrievance } from "../services/routing.service";
 
 type GrievanceProcessorInput = {
