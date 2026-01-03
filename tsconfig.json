@@ -1,0 +1,3 @@
+{
+  "extends": "@team-call-of-code/config/tsconfig.base.json"
+}
