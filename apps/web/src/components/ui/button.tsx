@@ -6,39 +6,112 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-none border border-transparent bg-clip-padding text-xs font-medium focus-visible:ring-1 aria-invalid:ring-1 [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none",
+  [
+    // Base
+    "inline-flex items-center justify-center whitespace-nowrap select-none",
+    "text-sm font-medium",
+    "transition-all duration-300 ease-out",
+    "outline-none focus-visible:ring-2 focus-visible:ring-purple-400/40 focus-visible:ring-offset-2",
+    "disabled:pointer-events-none disabled:opacity-50",
+    "group/button",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0",
+    "[&_svg:not([class*='size-'])]:size-4",
+    "rounded-full",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        /** 🌈 Primary – Gradient Fintech Button */
+        default:
+          [
+            "bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600",
+            "text-white",
+            "shadow-lg shadow-purple-500/30",
+            "hover:shadow-xl hover:shadow-purple-500/40",
+            "hover:-translate-y-0.5 hover:scale-[1.02]",
+            "active:scale-[0.98]",
+          ].join(" "),
+
+        /** 🧊 Outline – Clean Secondary */
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 aria-expanded:bg-muted aria-expanded:text-foreground",
+          [
+            "border border-purple-200/70",
+            "bg-white/70 backdrop-blur-md",
+            "text-purple-700",
+            "hover:bg-purple-50",
+            "hover:border-purple-300",
+            "hover:-translate-y-0.5",
+          ].join(" "),
+
+        /** 🌸 Secondary – Soft pastel */
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          [
+            "bg-purple-100/70 text-purple-800",
+            "hover:bg-purple-200/70",
+            "shadow-sm",
+            "hover:-translate-y-0.5",
+          ].join(" "),
+
+        /** ✨ Ghost – Glass style */
         ghost:
-          "hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground",
+          [
+            "bg-transparent",
+            "text-purple-700",
+            "hover:bg-purple-100/60",
+            "backdrop-blur-md",
+          ].join(" "),
+
+        /** 🚨 Destructive – Calm but clear */
         destructive:
-          "bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 text-destructive focus-visible:border-destructive/40 dark:hover:bg-destructive/30",
-        link: "text-primary underline-offset-4 hover:underline",
+          [
+            "bg-red-500/10 text-red-600",
+            "hover:bg-red-500/20",
+            "focus-visible:ring-red-400/40",
+          ].join(" "),
+
+        /** 🔗 Link */
+        link:
+          [
+            "text-purple-600",
+            "underline-offset-4",
+            "hover:underline",
+          ].join(" "),
       },
+
       size: {
         default:
-          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-6 gap-1 rounded-none px-2 text-xs has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1 rounded-none px-2.5 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3",
-        icon: "size-8",
-        "icon-xs": "size-6 rounded-none [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-7 rounded-none",
-        "icon-lg": "size-9",
+          "h-10 px-6 gap-2",
+
+        xs:
+          "h-7 px-3 text-xs gap-1 [&_svg:not([class*='size-'])]:size-3",
+
+        sm:
+          "h-8 px-4 text-sm gap-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+
+        lg:
+          "h-11 px-8 text-base gap-2",
+
+        icon:
+          "h-10 w-10 p-0",
+
+        "icon-xs":
+          "h-7 w-7 p-0 [&_svg:not([class*='size-'])]:size-3",
+
+        "icon-sm":
+          "h-8 w-8 p-0",
+
+        "icon-lg":
+          "h-11 w-11 p-0",
       },
     },
+
     defaultVariants: {
       variant: "default",
       size: "default",
     },
-  },
+  }
 );
+
 
 function Button({
   className,
