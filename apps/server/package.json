@@ -13,11 +13,13 @@
     "@team-call-of-code/db": "workspace:*",
     "@team-call-of-code/env": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
     "cors": "^2.8.5",
     "dotenv": "catalog:",
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
     "pino": "^10.1.0",
     "zod": "catalog:"
   },

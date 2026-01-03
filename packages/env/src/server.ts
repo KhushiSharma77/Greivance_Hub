@@ -8,6 +8,8 @@ export const env = createEnv({
     CORS_ORIGIN: z.url(),
     JWT_SECRET: z.string().min(1),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    SUPABASE_URL: z.string(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
