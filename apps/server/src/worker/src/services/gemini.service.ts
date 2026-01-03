@@ -1,10 +1,8 @@
-/**
- * Gemini AI Service
- * Handles interactions with Google Gemini API
- * Function-based exports for modular usage
- */
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// TODO: Implement Gemini AI service functions
-// export const analyzeGrievance = async (text: string) => { ... };
-// export const detectDuplicate = async (grievanceId: string) => { ... };
-// export const routeToDepartment = async (category: string) => { ... };
+console.log(process.env.GEMINI_API_KEY)
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
+export const geminiModel = genAI.getGenerativeModel({
+  model: "gemini-2.5-flash",
+});
