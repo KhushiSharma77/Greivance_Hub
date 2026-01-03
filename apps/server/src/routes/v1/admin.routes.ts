@@ -9,6 +9,7 @@ import {
     assignDepartmentSchema,
     userIdSchema,
 } from "../../types/admin.types";
+import type { Request, Response } from "express";
 import * as adminService from "../../services/admin.service";
 
 const adminRouter: Router = Router();
@@ -25,7 +26,7 @@ adminRouter.use(isAdmin);
 adminRouter.post(
     "/departments",
     validateBody(createDepartmentSchema),
-    asyncHandler(async (req, res) => {
+    asyncHandler(async (req: Request, res: Response) => {
         const department = await adminService.createDepartment(req.body);
 
         res.status(201).json({
@@ -43,7 +44,7 @@ adminRouter.post(
  */
 adminRouter.get(
     "/departments",
-    asyncHandler(async (req, res) => {
+    asyncHandler(async (req: Request, res: Response) => {
         const departments = await adminService.getAllDepartments();
 
         res.status(200).json({
@@ -62,7 +63,7 @@ adminRouter.get(
 adminRouter.post(
     "/users",
     validateBody(createUserSchema),
-    asyncHandler(async (req, res) => {
+    asyncHandler(async (req: Request, res: Response) => {
         const user = await adminService.createUser(req.body);
 
         res.status(201).json({
@@ -80,7 +81,7 @@ adminRouter.post(
  */
 adminRouter.get(
     "/users",
-    asyncHandler(async (req, res) => {
+    asyncHandler(async (req: Request, res: Response) => {
         const users = await adminService.getAllUsers();
 
         res.status(200).json({
@@ -100,7 +101,7 @@ adminRouter.patch(
     "/users/:id/department",
     validateParams(userIdSchema),
     validateBody(assignDepartmentSchema),
-    asyncHandler(async (req, res) => {
+    asyncHandler(async (req: Request, res: Response) => {
         const user = await adminService.assignDepartmentToUser(
             req.params.id!,
             req.body.departmentId,

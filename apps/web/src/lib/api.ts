@@ -34,10 +34,10 @@ export class ApiError extends Error {
 }
 
 export const api = {
-    getAuthHeaders() {
+    getAuthHeaders(isFormData = false) {
         const token = localStorage.getItem("auth_token");
         return {
-            "Content-Type": "application/json",
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
             ...(token ? { "Authorization": `Bearer ${token}` } : {}),
         };
     },
@@ -60,7 +60,6 @@ export const api = {
                     response.status
                 );
             }
-            alert("yeee you did it")
             return data;
         } catch (error) {
             if (error instanceof ApiError) {
@@ -84,12 +83,13 @@ export const api = {
         }
     },
 
-    async createGrievance(payload: any) {
+    async createGrievance(payload: FormData | any) {
         try {
+            const isFormData = payload instanceof FormData;
             const response = await fetch(`${API_BASE_URL}/api/v1/citizen/grievances`, {
                 method: "POST",
-                headers: this.getAuthHeaders(),
-                body: JSON.stringify(payload),
+                headers: this.getAuthHeaders(isFormData),
+                body: isFormData ? payload : JSON.stringify(payload),
             });
             const data = await response.json();
             if (!response.ok) throw new ApiError(data.error?.message || "Failed to create grievance", response.status);

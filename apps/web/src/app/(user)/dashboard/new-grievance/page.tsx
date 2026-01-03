@@ -157,16 +157,25 @@ export default function NewGrievancePage() {
 
         setIsSubmitting(true)
         try {
-            // Using the schema fields: originalText, latitude, longitude, imageUrl (string)
-            // Note: Since backend file handling is "later", we send data with an empty imageUrl or handle it as a placeholder.
-            const payload = {
+            const formData = new FormData();
+            
+            // Construct the data object with numerical coordinates
+            const data = {
                 originalText,
-                latitude: location?.lat,
-                longitude: location?.lng,
-                imageUrl: imagePreview // Temporary using base64 for now if backend doesn't handle multipart yet, or just null
+                latitude: location?.lat || 0,
+                longitude: location?.lng || 0,
+                category: "General" // Default category for now
+            };
+
+            // Stringify data for the "data" field (handled by parseData middleware on server)
+            formData.append("data", JSON.stringify(data));
+            
+            // Add the image file if available
+            if (image) {
+                formData.append("photo", image);
             }
 
-            const response = await api.createGrievance(payload)
+            const response = await api.createGrievance(formData)
             if (response.success) {
                 toast.success("Grievance submitted successfully!")
                 router.push("/dashboard")

@@ -9,11 +9,14 @@ import { ValidationError } from "../lib/error-handler";
 export const validate = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync({
+            const result = await schema.parseAsync({
                 body: req.body,
                 query: req.query,
                 params: req.params,
             });
+            req.body = result.body;
+            req.query = result.query;
+            req.params = result.params;
             next();
         } catch (error) {
             if (error instanceof Error && error.name === "ZodError") {
@@ -41,9 +44,11 @@ export const validate = (schema: any) => {
 export const validateBody = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync(req.body);
+             console.log("Control reaching here1111");
+            req.body = await schema.parseAsync(req.body);
             next();
         } catch (error) {
+            console.log("Control reaching here2222");
             if (error instanceof Error && error.name === "ZodError") {
                 const zodError = error as ZodError;
                 const errorMessages = zodError.errors.map((err) => ({
@@ -69,7 +74,7 @@ export const validateBody = (schema: any) => {
 export const validateQuery = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync(req.query);
+            req.query = await schema.parseAsync(req.query);
             next();
         } catch (error) {
             if (error instanceof Error && error.name === "ZodError") {
@@ -97,7 +102,7 @@ export const validateQuery = (schema: any) => {
 export const validateParams = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync(req.params);
+            req.params = await schema.parseAsync(req.params);
             next();
         } catch (error) {
             if (error instanceof Error && error.name === "ZodError") {
