@@ -9,7 +9,7 @@ export async function normalizeComplaintText(rawText: string) {
   const responseText = result.response.text();
 
   try {
-    return JSON.parse(responseText);
+    return ((JSON.parse(responseText)).data);
   } catch {
     throw new Error("Invalid JSON from Gemini (multilingual stage)");
   }

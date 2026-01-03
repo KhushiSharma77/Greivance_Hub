@@ -1,9 +1,8 @@
+import type { ExistingComplaint } from "../types/duplicatesIssue";
+
 export const DUPLICATE_DETECTION_PROMPT = (
   currentComplaint: string,
-  existingComplaints: {
-    grievance_id: string;
-    text: string;
-  }[]
+  existingComplaints: ExistingComplaint[]
 ) => `
 You are an AI system designed to detect duplicate citizen grievances.
 
@@ -30,8 +29,8 @@ EXISTING OPEN COMPLAINTS:
 ${existingComplaints
   .map(
     (c, i) => `
-${i + 1}. grievance_id: "${c.grievance_id}"
-   text: "${c.text}"
+${i + 1}. grievance_id: "${c.id}"
+   text: "${c.translatedText}"
 `
   )
   .join("\n")}

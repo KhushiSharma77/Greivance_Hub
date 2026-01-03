@@ -1,4 +1,4 @@
 export type ExistingComplaint = {
-  grievance_id: string;
-  text: string;
+  id: string;
+  translatedText: string | null;
 };

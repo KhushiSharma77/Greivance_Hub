@@ -2,44 +2,67 @@ import prisma from '@team-call-of-code/db';
 import type { GrievanceRoutedEvent } from '../types/events.types';
 
 export const routingEvents = {
+ 
   async onRouted(event: GrievanceRoutedEvent) {
-    const { grievanceId, departmentId } = event;
+    const { grievanceId, departmentName, city } = event;
 
     console.log('[EVENT] Grievance Routed:', {
       grievanceId,
-      departmentId,
+      departmentName,
+      city,
     });
 
+    // 1️⃣ Resolve department ID safely
+    const department = await prisma.department.findFirst({
+      where: {
+        name: departmentName,
+        City: city,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!department) {
+      throw new Error(
+        `No department found for ${departmentName} in ${city}`
+      );
+    }
+
     await prisma.$transaction(async (tx) => {
-      // 1️⃣ Update grievance with department & status
+      // Update grievance
       await tx.grievance.update({
         where: { id: grievanceId },
         data: {
-          departmentId,
+          departmentId: department.id,
           status: 'IN_PROGRESS',
         },
       });
+
     });
 
-    // 3️⃣ Optional: trigger notification (async)
-    // notifyDepartment(departmentId, grievanceId);
+    // 3️⃣ Optional async side effects
+    // notifyDepartment(department.id, grievanceId);
   },
 
+  
   async onFailed(grievanceId: string, error: Error) {
     console.error('[EVENT] Routing Failed:', {
       grievanceId,
       error: error.message,
     });
 
-    // Mark grievance for retry or manual review
-    await prisma.grievance.update({
-      where: { id: grievanceId },
-      data: {
-        status: 'ANALYZED', // fallback to previous stable state
-      },
-    });
+    await prisma.$transaction(async (tx) => {
+      // Revert to safe retryable state
+      await tx.grievance.update({
+        where: { id: grievanceId },
+        data: {
+          status: 'ANALYZED',
+        },
+      });
 
-    // Optional audit log
-    
+      
+      
+    });
   },
 };

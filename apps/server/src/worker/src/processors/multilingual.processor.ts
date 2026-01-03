@@ -1,37 +1,33 @@
-import {type Request,type Response } from "express";
-import { normalizeComplaintText } from "../services/multilingual.service";
+import { Job } from 'bullmq';
+import { normalizeComplaintText } from '../services/multilingual.service';
 
-export async function normalizeComplaintController(
-  req: Request,
-  res: Response
-) {
+import { multilingualEvents } from '../events/multilingual.events';
+import { GRIEVANCE_QUEUE_NAME, grievanceQueue } from '../queues/grievance.queue';
+
+export async function multilingualProcessor(job: Job) {
+  const { grievanceId, text } = job.data;
+
   try {
-    const { complaintText } = req.body;
+    // ✅ CALL SERVICE HERE
+    const {normalized_text,detected_language} =
+      await normalizeComplaintText(text);
 
-    // 1️⃣ Validation
-    if (!complaintText || typeof complaintText !== "string") {
-      return res.status(400).json({
-        success: false,
-        message: "complaintText is required and must be a string",
-      });
-    }
-
-    // 2️⃣ Call service
-    const normalizedResult = await normalizeComplaintText(complaintText);
-
-    // 3️⃣ Response
-    return res.status(200).json({
-      success: true,
-      data: normalizedResult,
+    // side effects
+    await multilingualEvents.onProcessed({
+      grievanceId,
+      originalLanguage: detected_language,
+      normalizedText:normalized_text,
     });
-  } catch (error: any) {
-    console.error("Normalization Error:", error.message);
 
-    return res.status(500).json({
-      success: false,
-      message: "Failed to normalize complaint",
-      error: error.message,
+    // chain next job
+    await grievanceQueue.add(GRIEVANCE_QUEUE_NAME, {
+      grievanceId,
+      text: normalized_text,
     });
+
+    return { grievanceId };
+  } catch (err) {
+    await multilingualEvents.onFailed(grievanceId);
+    throw err; // IMPORTANT for retry
   }
 }
-

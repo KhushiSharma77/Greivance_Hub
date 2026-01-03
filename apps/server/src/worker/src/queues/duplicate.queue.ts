@@ -3,7 +3,19 @@
  * Handles duplicate grievance detection jobs
  */
 
-// TODO: Implement BullMQ queue for duplicate detection
+import { duplicateProcessor } from "../processors/duplicate.processor";
+import { redisConnection } from "../utils/redis";
+import { Queue,Worker } from "bullmq";
 export const DUPLICATE_QUEUE_NAME = "duplicate-detection";
 
-// TODO: Create and export queue instance
+export const duplicateQueue = new Queue(DUPLICATE_QUEUE_NAME, {
+  connection: redisConnection,
+});
+
+export const duplicateWorker = new Worker(
+  DUPLICATE_QUEUE_NAME,
+  duplicateProcessor,
+  { connection: redisConnection, concurrency: 5 }
+);
+
+

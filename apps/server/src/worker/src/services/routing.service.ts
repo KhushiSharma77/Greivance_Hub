@@ -1,63 +1,52 @@
-import type {
-    CreateGrievanceInput,
-    GrievanceDTO,
-} from "@/types/Grievance";
-import prisma from "@team-call-of-code/db";
+import { geminiModel } from "./gemini.service";
+import { ROUTING_PROMPT } from "../prompts/routing.prompts";
+import { extractJsonFromText } from "../utils/extractJson";
 
-export async function createGrievance(
-    input: CreateGrievanceInput
-): Promise<GrievanceDTO> {
-    const { departmentName, grievance } = input;
 
-    const {
-        userId,
-        originalText,
-        translatedText,
-        category,
-        priority,
-        latitude,
-        longitude,
-    } = grievance;
+type RoutingResult = {
+  city: string;
+  department: string;
+  confidence: number;
+};
 
-    // 1️⃣ Fetch department by name
-    const department = await prisma.department.findFirst({
-        where: { name: departmentName },
-    });
+export async function routeGrievanceText(params: {
+  normalizedText: string;
+  category: string;
+  latitude: number;
+  longitude: number;
+}): Promise<RoutingResult> {
+  const { normalizedText, category, latitude, longitude } = params;
 
-    if (!department) {
-        throw new Error(`Department not found: ${departmentName}`);
+  const result = await geminiModel.generateContent(
+    ROUTING_PROMPT(
+      normalizedText,
+      category,
+      latitude,
+      longitude
+    )
+  );
+
+  const responseText = result.response.text();
+
+  try {
+    const data = extractJsonFromText(responseText).data as RoutingResult;
+
+    // 🔐 Validate confidence
+    if (
+      typeof data.confidence !== "number" ||
+      data.confidence < 0 ||
+      data.confidence > 1
+    ) {
+      throw new Error("Invalid confidence score from Gemini");
     }
 
-    // 2️⃣ Create grievance (Prisma internal)
-    const created = await prisma.grievance.create({
-        data: {
-            userId,
-            originalText,
-            translatedText,
-            category,
-            priority,
-            status: "PENDING", // string literal, not Prisma enum
-            departmentId: department.id,
-            latitude,
-            longitude,
-        },
-    });
-
-    // 3️⃣ Map Prisma model → Domain DTO
     return {
-        id: created.id,
-        userId: created.userId,
-        originalText: created.originalText,
-        translatedText: created.translatedText,
-        category: created.category,
-        priority: created.priority as any,
-        status: created.status as any,
-        departmentId: created.departmentId,
-        assignedOfficerId: created.assignedOfficerId,
-        duplicateOfId: created.duplicateOfId,
-        latitude: created.latitude,
-        longitude: created.longitude,
-        createdAt: created.createdAt,
-        updatedAt: created.updatedAt,
+      city: data.city || "Unknown",
+      department: data.department,
+      confidence: data.confidence,
     };
+  } catch (err) {
+    console.error("Raw Gemini Response:", responseText);
+    throw new Error("Invalid JSON from Gemini (routing stage)");
+  }
 }
