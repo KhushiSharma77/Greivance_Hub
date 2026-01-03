@@ -10,6 +10,10 @@
     "start": "bun run dist/index.js"
   },
   "dependencies": {
+<<<<<<< HEAD
+=======
+    "@google/generative-ai": "^0.24.1",
+>>>>>>> origin
     "@team-call-of-code/db": "workspace:*",
     "@team-call-of-code/env": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10",
@@ -18,7 +22,10 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",
     "jsonwebtoken": "^9.0.3",
+<<<<<<< HEAD
     "pino": "^10.1.0",
+=======
+>>>>>>> origin
     "zod": "catalog:"
   },
   "devDependencies": {

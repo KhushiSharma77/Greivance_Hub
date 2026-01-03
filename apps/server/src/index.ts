@@ -14,6 +14,8 @@ app.use(
 
 app.use(express.json());
 
+app.use("/api/grievance",grievanceRoutes );
+
 app.get("/", (_req, res) => {
   res.status(200).send("OK");
 });
