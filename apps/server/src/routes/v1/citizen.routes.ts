@@ -10,7 +10,14 @@ import {
     grievanceIdSchema,
 } from "../../types/grievance.types";
 import * as grievanceService from "../../services/grievance.service";
+import { type Multer } from 'multer'
+import { SupabaseClient } from '@supabase/supabase-js'
 
+
+export default function citizenRouter(
+  upload: Multer,
+  supabase: SupabaseClient,
+) {
 const citizenRouter: Router = Router();
 
 // All citizen routes require authentication
@@ -26,11 +33,13 @@ citizenRouter.post(
     "/grievances",
     grievanceLimiter,
     validateBody(createGrievanceSchema),
+    upload.single("photo"),
     asyncHandler(async (req, res) => {
+
         const grievance = await grievanceService.createGrievance({
             userId: req.user!.id,
-            ...req.body,
-        });
+            ...req.grievanceData,
+        }, req.file);
 
         res.status(201).json({
             success: true,
@@ -90,11 +99,13 @@ citizenRouter.patch(
     "/grievances/:id",
     validateParams(grievanceIdSchema),
     validateBody(updateGrievanceSchema),
+    upload.single("photo"),
     asyncHandler(async (req, res) => {
         const grievance = await grievanceService.updateGrievance(
             req.params.id!,
             req.user!.id,
-            req.body,
+            req.file,
+            req.grievanceData,
         );
 
         res.status(200).json({
@@ -123,4 +134,5 @@ citizenRouter.delete(
     }),
 );
 
-export default citizenRouter;
+return citizenRouter;
+}
