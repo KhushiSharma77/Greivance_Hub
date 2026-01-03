@@ -12,8 +12,7 @@
   "dependencies": {
     "@team-call-of-code/db": "workspace:*",
     "@team-call-of-code/env": "workspace:*",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.0.0",
+    "@google/generative-ai": "^0.24.1",
     "cors": "^2.8.5",
     "dotenv": "catalog:",
     "express": "^5.1.0",
@@ -27,6 +26,8 @@
     "@types/express": "^5.0.1",
     "@types/cors": "^2.8.17",
     "@types/bun": "catalog:",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
     "typescript": "catalog:",
     "tsdown": "^0.16.5",
     "@team-call-of-code/config": "workspace:*"
