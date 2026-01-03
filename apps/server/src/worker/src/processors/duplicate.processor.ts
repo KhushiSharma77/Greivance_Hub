@@ -1,6 +1,6 @@
 import prisma from "@team-call-of-code/db";
 import { detectDuplicateGrievance } from "../services/duplicate.service";
-import type { ExistingComplaint } from "@/types/duplicatesIssue";
+import type { ExistingComplaint } from "@/worker/src/types/duplicatesIssue";
 
 type DuplicateProcessorResult = {
   isDuplicate: boolean;
