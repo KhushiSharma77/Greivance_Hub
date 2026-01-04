@@ -1,4 +1,5 @@
-import type { PriorityLevel, SentimentType } from "node_modules/@team-call-of-code/db/prisma/generated/enums";
+import type { PriorityLevel, SentimentType } from "@team-call-of-code/db";
+
 
 export type GrievanceProcessedEvent = {
   grievanceId: string;

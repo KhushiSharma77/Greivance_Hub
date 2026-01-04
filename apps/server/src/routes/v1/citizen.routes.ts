@@ -3,10 +3,8 @@ import { authenticate } from "../../middleware/authentication";
 import { isCitizen } from "../../middleware/authorization";
 import { asyncHandler } from "../../lib/error-handler";
 import { grievanceLimiter } from "../../middleware/rate-limit";
-import { validateBody, validateParams } from "../../middleware/validate";
+import { validateParams } from "../../middleware/validate";
 import {
-    createGrievanceSchema,
-    updateGrievanceSchema,
     grievanceIdSchema,
 } from "../../types/grievance.types";
 import * as grievanceService from "../../services/grievance.service";
@@ -51,33 +49,33 @@ export default function citizenRouter(
         upload.single("photo"),
         parseData,
         asyncHandler(async (req: Request, res: Response) => {
-  if (!req.file) {
-    const grievance = await grievanceService.createGrievance({
-      userId: req.user!.id,
-      ...req.body,
-    });
+            if (!req.file) {
+                const grievance = await grievanceService.createGrievance({
+                    userId: req.user!.id,
+                    ...req.body,
+                });
 
-    return res.status(201).json({
-      success: true,
-      message: "Grievance created successfully",
-      data: grievance,
-    });
-  }
+                return res.status(201).json({
+                    success: true,
+                    message: "Grievance created successfully",
+                    data: grievance,
+                });
+            }
 
-  const grievance = await grievanceService.createGrievance(
-    {
-      userId: req.user!.id,
-      ...req.body,
-    },
-    req.file
-  );
+            const grievance = await grievanceService.createGrievance(
+                {
+                    userId: req.user!.id,
+                    ...req.body,
+                },
+                req.file
+            );
 
-  return res.status(201).json({
-    success: true,
-    message: "Grievance created successfully",
-    data: grievance,
-  });
-})
+            return res.status(201).json({
+                success: true,
+                message: "Grievance created successfully",
+                data: grievance,
+            });
+        })
 
     );
 
@@ -132,12 +130,7 @@ export default function citizenRouter(
         upload.single("photo"),
         parseData,
         validateParams(grievanceIdSchema),
-        validateBody(updateGrievanceSchema),
         asyncHandler(async (req: Request, res: Response) => {
-            if (!req.file) return res.status(400).json({
-                success: false,
-                message: "No file uploaded",
-            });
             const grievance = await grievanceService.updateGrievance(
                 req.params.id!,
                 req.user!.id,
