@@ -20,10 +20,10 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
     const pathname = usePathname()
 
     const navItems = [
-        { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-        { icon: MessageSquare, label: "My Grievances", href: "/dashboard/grievances" },
-        { icon: Bell, label: "Notifications", href: "/dashboard/notifications" },
-        { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+        { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" as const },
+        { icon: MessageSquare, label: "My Grievances", href: "/dashboard/grievances" as const },
+        { icon: Bell, label: "Notifications", href: "/dashboard/notifications" as const },
+        { icon: Settings, label: "Settings", href: "/dashboard/settings" as const },
     ]
 
     const handleLogout = () => {
