@@ -55,6 +55,10 @@ export default function citizenRouter(
                     userId: req.user!.id,
                     ...req.body,
                 });
+                await multilingualQueue.add("multilingual-process",{
+                grievanceId:grievance.id,
+                text:grievance.originalText
+            })
 
                 return res.status(201).json({
                     success: true,
@@ -70,7 +74,7 @@ export default function citizenRouter(
                 },
                 req.file
             );
-
+            
             await multilingualQueue.add("multilingual-process",{
                 grievanceId:grievance.id,
                 text:grievance.originalText
