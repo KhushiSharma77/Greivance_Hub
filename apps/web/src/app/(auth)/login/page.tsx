@@ -101,7 +101,7 @@ export default function LoginPage() {
                     localStorage.setItem("user_role", response.data.user.role)
                     
                     // Redirect based on role
-                    window.location.href = role === "user" ? "/dashboard" : role === "officer" ? "/officer/dashboard" : "/admin/dashboard"
+                    window.location.href = role === "user" ? "/dashboard" : role === "officer" ? "/officer" : "/admin"
                 }
             } catch (error) {
                 if (error instanceof ApiError) {
