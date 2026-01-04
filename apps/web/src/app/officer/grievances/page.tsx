@@ -71,6 +71,8 @@ interface Grievance {
     status: "PENDING" | "ANALYZED" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
     createdAt: string;
     priority: "LOW" | "MEDIUM" | "HIGH";
+    latitude?: number;
+    longitude?: number;
 }
 
 export default function OfficerGrievancesPage() {

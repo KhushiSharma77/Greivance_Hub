@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { 
-    LayoutDashboard, 
-    MessageSquare, 
-    Bell, 
-    Settings, 
+import {
+    LayoutDashboard,
+    MessageSquare,
+    Bell,
+    Settings,
     LogOut,
     User as UserIcon,
     Menu,
@@ -20,10 +20,10 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
     const pathname = usePathname()
 
     const navItems = [
-        { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-        { icon: MessageSquare, label: "My Grievances", href: "/dashboard/grievances" },
-        { icon: Bell, label: "Notifications", href: "/dashboard/notifications" },
-        { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+        { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" as const },
+        { icon: MessageSquare, label: "My Grievances", href: "/dashboard/grievances" as const },
+        { icon: Bell, label: "Notifications", href: "/dashboard/notifications" as const },
+        { icon: Settings, label: "Settings", href: "/dashboard/settings" as const },
     ]
 
     const handleLogout = () => {
@@ -55,13 +55,13 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                             const Icon = item.icon
                             const isActive = pathname === item.href
                             return (
-                                <Link 
-                                    key={item.href} 
-                                    href={item.href}
+                                <Link
+                                    key={item.href}
+                                    href={item.href as any}
                                     className={`
                                         flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                                        ${isActive 
-                                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
+                                        ${isActive
+                                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                                             : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}
                                     `}
                                 >
@@ -73,8 +73,8 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                     </nav>
 
                     <div className="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800">
-                        <Button 
-                            variant="ghost" 
+                        <Button
+                            variant="ghost"
                             className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 gap-3 px-4"
                             onClick={handleLogout}
                         >
@@ -89,12 +89,32 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
             <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                 {/* Header */}
                 <header className="h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between z-40">
-                    <button 
+                    <button
                         className="lg:hidden p-2 text-slate-600 dark:text-slate-400"
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     >
                         {isSidebarOpen ? <X /> : <Menu />}
                     </button>
+
+                    {/* Navbar Navigation */}
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-all font-medium"
+                        >
+                            <LayoutDashboard className="w-4 h-4" />
+                            <span className="hidden sm:inline">Home</span>
+                        </Link>
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={handleLogout}
+                            className="flex items-center gap-2"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            <span className="hidden sm:inline">Logout</span>
+                        </Button>
+                    </div>
 
                     <div className="flex-1" />
 
@@ -124,7 +144,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
 
             {/* Mobile Overlay */}
             {isSidebarOpen && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
                     onClick={() => setIsSidebarOpen(false)}
                 />

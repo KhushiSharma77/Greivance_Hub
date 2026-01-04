@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { 
-    Plus, 
-    Search, 
-    Filter, 
-    ChevronRight, 
-    Clock, 
-    CheckCircle2, 
+import {
+    Plus,
+    Search,
+    Filter,
+    Eye,
+    Pencil,
+    Trash2,
+    Clock,
+    CheckCircle2,
     AlertCircle,
     TrendingUp,
     FileText,
@@ -19,20 +21,57 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { api, ApiError } from "@/lib/api"
 import { Skeleton } from "@/components/ui/skeleton"
+import { GrievanceDetailsDialog } from "@/components/grievance-details-dialog"
+import { EditGrievanceDialog } from "@/components/edit-grievance-dialog"
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 
 interface Grievance {
     id: string;
     originalText: string;
-    category?: string;
+    translatedText?: string | null;
+    category?: string | null;
     status: "PENDING" | "IN_PROGRESS" | "RESOLVED" | "REJECTED";
+    priority?: "LOW" | "MEDIUM" | "HIGH";
     createdAt: string;
-    priority: "LOW" | "MEDIUM" | "HIGH";
+    updatedAt: string;
+    imageUrl?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    user?: {
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+    };
+    department?: {
+        id: string;
+        name: string;
+        City: string;
+    } | null;
+    assignedOfficer?: {
+        id: string;
+        name: string;
+        email: string;
+    } | null;
+    aiMetadata?: {
+        id: string;
+        category: string | null;
+        priority: string | null;
+        sentiment: string | null;
+        urgency: number | null;
+        keywords: any;
+        summary: string | null;
+    } | null;
 }
 
 export default function UserDashboard() {
     const [grievances, setGrievances] = useState<Grievance[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [selectedGrievance, setSelectedGrievance] = useState<Grievance | null>(null)
+    const [detailsOpen, setDetailsOpen] = useState(false)
+    const [editOpen, setEditOpen] = useState(false)
+    const [deleteOpen, setDeleteOpen] = useState(false)
 
     useEffect(() => {
         fetchData()
@@ -55,34 +94,38 @@ export default function UserDashboard() {
         }
     }
 
+    const handleOperationSuccess = () => {
+        fetchData()
+    }
+
     const stats = [
-        { 
-            label: "Total Posted", 
-            value: grievances.length, 
-            icon: FileText, 
-            color: "text-blue-500", 
-            bg: "bg-blue-50 dark:bg-blue-950/30" 
+        {
+            label: "Total Posted",
+            value: grievances.length,
+            icon: FileText,
+            color: "text-blue-500",
+            bg: "bg-blue-50 dark:bg-blue-950/30"
         },
-        { 
-            label: "Pending", 
-            value: grievances.filter(g => g.status === "PENDING").length, 
-            icon: Clock, 
-            color: "text-orange-500", 
-            bg: "bg-orange-50 dark:bg-orange-950/30" 
+        {
+            label: "Pending",
+            value: grievances.filter(g => g.status === "PENDING").length,
+            icon: Clock,
+            color: "text-orange-500",
+            bg: "bg-orange-50 dark:bg-orange-950/30"
         },
-        { 
-            label: "In Progress", 
-            value: grievances.filter(g => g.status === "IN_PROGRESS").length, 
-            icon: TrendingUp, 
-            color: "text-purple-500", 
-            bg: "bg-purple-50 dark:bg-purple-950/30" 
+        {
+            label: "In Progress",
+            value: grievances.filter(g => g.status === "IN_PROGRESS").length,
+            icon: TrendingUp,
+            color: "text-purple-500",
+            bg: "bg-purple-50 dark:bg-purple-950/30"
         },
-        { 
-            label: "Resolved", 
-            value: grievances.filter(g => g.status === "RESOLVED").length, 
-            icon: CheckCircle2, 
-            color: "text-green-500", 
-            bg: "bg-green-50 dark:bg-green-950/30" 
+        {
+            label: "Resolved",
+            value: grievances.filter(g => g.status === "RESOLVED").length,
+            icon: CheckCircle2,
+            color: "text-green-500",
+            bg: "bg-green-50 dark:bg-green-950/30"
         }
     ]
 
@@ -109,7 +152,7 @@ export default function UserDashboard() {
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Citizen Dashboard</h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-1">Monitor and track your posted grievances in real-time.</p>
                 </div>
-                <Link href="/dashboard/new-grievance">
+                <Link href={"/dashboard/new-grievance" as any}>
                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-6 rounded-2xl shadow-lg shadow-primary/20 gap-2 transition-all hover:scale-105 active:scale-95">
                         <Plus className="w-5 h-5" />
                         <span>Raise New Grievance</span>
@@ -181,7 +224,7 @@ export default function UserDashboard() {
                         ) : (
                             <div className="divide-y divide-slate-50 dark:divide-slate-800">
                                 {grievances.map((grievance) => (
-                                    <div key={grievance.id} className="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group cursor-pointer">
+                                    <div key={grievance.id} className="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-2">
@@ -203,14 +246,52 @@ export default function UserDashboard() {
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <MapPin className="w-4 h-4" />
-                                                        Kolkata, WB
+                                                        {grievance.department?.City ??
+                                                            `${grievance.latitude}, ${grievance.longitude}`}
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div className="md:opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Button variant="ghost" size="icon" className="rounded-full">
-                                                    <ChevronRight className="w-5 h-5" />
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="rounded-xl gap-2"
+                                                    onClick={() => {
+                                                        setSelectedGrievance(grievance)
+                                                        setDetailsOpen(true)
+                                                    }}
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                    View
                                                 </Button>
+                                                {grievance.status === "PENDING" && (
+                                                    <>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="rounded-xl gap-2"
+                                                            onClick={() => {
+                                                                setSelectedGrievance(grievance)
+                                                                setEditOpen(true)
+                                                            }}
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                            Edit
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="rounded-xl gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                            onClick={() => {
+                                                                setSelectedGrievance(grievance)
+                                                                setDeleteOpen(true)
+                                                            }}
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                            Delete
+                                                        </Button>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -260,6 +341,25 @@ export default function UserDashboard() {
                     </Card>
                 </div>
             </div>
+
+            {/* Dialog Components */}
+            <GrievanceDetailsDialog
+                grievance={selectedGrievance}
+                open={detailsOpen}
+                onOpenChange={setDetailsOpen}
+            />
+            <EditGrievanceDialog
+                grievance={selectedGrievance}
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                onSuccess={handleOperationSuccess}
+            />
+            <DeleteConfirmationDialog
+                grievance={selectedGrievance}
+                open={deleteOpen}
+                onOpenChange={setDeleteOpen}
+                onSuccess={handleOperationSuccess}
+            />
         </div>
     )
 }

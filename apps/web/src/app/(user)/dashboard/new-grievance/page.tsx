@@ -2,14 +2,14 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { 
-    Camera, 
-    Mic, 
-    MicOff, 
-    MapPin, 
-    Image as ImageIcon, 
-    X, 
-    Loader2, 
+import {
+    Camera,
+    Mic,
+    MicOff,
+    MapPin,
+    Image as ImageIcon,
+    X,
+    Loader2,
     ChevronLeft,
     CheckCircle2,
     Languages
@@ -65,7 +65,7 @@ export default function NewGrievancePage() {
     const [isListening, setIsListening] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [selectedLang, setSelectedLang] = useState('en-IN')
-    
+
     // Voice Recognition Ref
     const recognitionRef = useRef<any>(null)
 
@@ -75,7 +75,7 @@ export default function NewGrievancePage() {
             recognitionRef.current = new SpeechRecognition()
             recognitionRef.current.continuous = true
             recognitionRef.current.interimResults = true
-            
+
             recognitionRef.current.onresult = (event: any) => {
                 const transcript = Array.from(event.results)
                     .map((result: any) => result[0])
@@ -158,7 +158,7 @@ export default function NewGrievancePage() {
         setIsSubmitting(true)
         try {
             const formData = new FormData();
-            
+
             // Construct the data object with numerical coordinates
             const data = {
                 originalText,
@@ -169,7 +169,7 @@ export default function NewGrievancePage() {
 
             // Stringify data for the "data" field (handled by parseData middleware on server)
             formData.append("data", JSON.stringify(data));
-            
+
             // Add the image file if available
             if (image) {
                 formData.append("photo", image);
@@ -178,7 +178,7 @@ export default function NewGrievancePage() {
             const response = await api.createGrievance(formData)
             if (response.success) {
                 toast.success("Grievance submitted successfully!")
-                router.push("/dashboard")
+                router.push("/dashboard" as any)
             }
         } catch (err) {
             if (err instanceof ApiError) {
@@ -195,9 +195,9 @@ export default function NewGrievancePage() {
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
             <div className="flex items-center gap-4">
-                <Button 
-                    variant="ghost" 
-                    size="icon" 
+                <Button
+                    variant="ghost"
+                    size="icon"
                     className="rounded-full h-10 w-10"
                     onClick={() => router.back()}
                 >
@@ -221,7 +221,7 @@ export default function NewGrievancePage() {
                             {imagePreview ? (
                                 <div className="relative group rounded-2xl overflow-hidden border-2 border-primary/20 aspect-square">
                                     <img src={imagePreview} alt="Preview" className="w-full h-full object-cover transition-transform group-hover:scale-105" />
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => { setImage(null); setImagePreview(null); }}
                                         className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
@@ -247,9 +247,9 @@ export default function NewGrievancePage() {
                             <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">Location</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <Button 
-                                type="button" 
-                                variant="outline" 
+                            <Button
+                                type="button"
+                                variant="outline"
                                 className="w-full h-12 rounded-xl gap-2 font-semibold border-2 hover:bg-slate-50"
                                 onClick={detectLocation}
                                 disabled={isLocating}
@@ -274,11 +274,11 @@ export default function NewGrievancePage() {
                     <Card className="border-none shadow-sm bg-white dark:bg-slate-900/50 backdrop-blur-sm h-full">
                         <CardHeader className="pb-4 flex flex-row items-center justify-between">
                             <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">Issue Description</CardTitle>
-                            
+
                             {/* Language Selector */}
                             <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
                                 <Languages className="w-4 h-4 text-slate-500" />
-                                <select 
+                                <select
                                     className="bg-transparent border-none text-xs font-bold outline-none cursor-pointer text-slate-700 dark:text-slate-300"
                                     value={selectedLang}
                                     onChange={(e) => setSelectedLang(e.target.value)}
@@ -291,22 +291,21 @@ export default function NewGrievancePage() {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="relative">
-                                <textarea 
+                                <textarea
                                     className="w-full min-h-[300px] p-6 rounded-2xl bg-slate-50 dark:bg-slate-950/50 border-2 border-transparent focus:border-primary/30 outline-none transition-all resize-none text-lg leading-relaxed dark:text-white"
                                     placeholder="Describe your issue in detail... Use your voice for faster typing!"
                                     value={originalText}
                                     onChange={(e) => setOriginalText(e.target.value)}
                                     required
                                 />
-                                
-                                <button 
+
+                                <button
                                     type="button"
                                     onClick={toggleListening}
-                                    className={`absolute bottom-6 right-6 p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 active:scale-90 ${
-                                        isListening 
-                                            ? "bg-red-500 text-white animate-pulse" 
+                                    className={`absolute bottom-6 right-6 p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 active:scale-90 ${isListening
+                                            ? "bg-red-500 text-white animate-pulse"
                                             : "bg-primary text-white"
-                                    }`}
+                                        }`}
                                 >
                                     {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
                                 </button>
@@ -319,9 +318,9 @@ export default function NewGrievancePage() {
                                         ({originalText.length})
                                     </span>
                                 </div>
-                                
-                                <Button 
-                                    type="submit" 
+
+                                <Button
+                                    type="submit"
                                     className="bg-primary hover:bg-primary/90 text-primary-foreground px-10 h-12 rounded-xl shadow-lg shadow-primary/20 font-bold gap-2 transition-all hover:translate-y-[-2px]"
                                     disabled={isSubmitting}
                                 >

@@ -185,7 +185,11 @@ export default function OfficerDashboard() {
                         ) : (
                             <div className="divide-y divide-slate-50 dark:divide-slate-800">
                                 {grievances.map((grievance) => (
-                                    <div key={grievance.id} className="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group cursor-pointer">
+                                    <div
+                                        key={grievance.id}
+                                        className="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group cursor-pointer"
+                                        onClick={() => router.push('/officer/grievances' as any)}
+                                    >
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-2">
@@ -212,7 +216,7 @@ export default function OfficerDashboard() {
                                                 </div>
                                             </div>
                                             <div className="md:opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Button onClick={() => router.push('/officer/grievances')} variant="ghost" size="icon" className="rounded-full">
+                                                <Button onClick={() => router.push('/officer/grievances' as any)} variant="ghost" size="icon" className="rounded-full">
                                                     <ChevronRight className="w-5 h-5" />
                                                 </Button>
                                             </div>
@@ -257,7 +261,11 @@ export default function OfficerDashboard() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <p className="text-sm text-slate-500">Access frequently used tools and resources.</p>
-                            <Button variant="outline" className="w-full rounded-xl gap-2 font-semibold border-purple-200 hover:bg-purple-50 dark:border-purple-800 dark:hover:bg-purple-950/30">
+                            <Button
+                                variant="outline"
+                                className="w-full rounded-xl gap-2 font-semibold border-purple-200 hover:bg-purple-50 dark:border-purple-800 dark:hover:bg-purple-950/30"
+                                onClick={() => router.push('/officer/grievances' as any)}
+                            >
                                 View All Grievances
                             </Button>
                         </CardContent>

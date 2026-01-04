@@ -266,120 +266,15 @@ GFGBQ-Team-call-of-code/
 │       └── tsconfig.json
 │
 ├── packages/
-│   ├── db/                    # Shared database package
-│   │   ├── prisma/
-│   │   │   ├── migrations/
-│   │   │   └── schema/
-│   │   │       └── schema.prisma
-│   │   └── src/
-│   ├── env/                   # Environment configuration
-│   └── config/                # Shared configuration
-│
-├── Claude.md                  # Development guidelines
-├── README.md
-├── package.json
-├── turbo.json
-└── tsconfig.json
+│   ├── api/         # API layer / business logic
 ```
 
----
+## Available Scripts
 
-## 🔑 Key Features in Detail
-
-### 1. Multi-Language Support
-- Automatic detection of input language
-- Translation to preferred language
-- Support for major Indian regional languages
-
-### 2. Duplicate Detection
-- AI-powered duplicate complaint identification
-- Clustering similar grievances
-- Aggregated statistics for recurring issues
-
-### 3. Smart Routing
-- Automatic department assignment based on complaint category
-- Priority-based queue management
-- Load balancing across officers
-
-### 4. Transparent Tracking
-- Real-time status updates
-- Timeline view of grievance lifecycle
-- Officer accountability
-
-### 5. Analytics Dashboard
-- Grievance volume trends
-- Category distribution
-- Resolution time metrics
-- Department performance comparison
-
----
-
-## 🎯 Development Principles
-
-### Core Principles
-
-1. **Ship Fast, But Not Broken**: Move quickly on features without compromising data integrity
-2. **Less Code is Better**: Achieve functionality with minimal, maintainable code
-3. **User Data is Sacred**: Always use database transactions for critical operations
-4. **Security is Not Optional**: Validate all inputs, rate limit public endpoints
-5. **Observability > Perfection**: Implement structured logging and error tracking from day one
-
-### Code Quality
-
-- **TypeScript**: Strict type checking enabled
-- **Validation**: Zod schemas for all API inputs
-- **Error Handling**: Custom error classes with global error middleware
-- **Testing**: Comprehensive test coverage (unit + integration)
-- **Authentication**: JWT-based with role-based access control
-
----
-
-## 📚 Available Scripts
-
-```bash
-# Development
-bun run dev              # Start all applications
-bun run dev:web          # Start only the web application
-bun run dev:server       # Start only the server
-
-# Building
-bun run build            # Build all applications
-
-# Database
-bun run db:push          # Push schema changes to database
-bun run db:studio        # Open Prisma Studio
-
-# Type Checking
-bun run check-types      # Check TypeScript types across all apps
-```
-
----
-
-## 🤝 Contributing
-
-This project was built in 24 hours for the GeeksforGeeks ByteQuest hackathon by Team **CallOfCode**. We welcome contributions and suggestions for improvements!
-
----
-
-## 📄 License
-
-This project is part of the GeeksforGeeks ByteQuest 2025 hackathon submission.
-
----
-
-## 👥 Team CallOfCode
-
-Built with ❤️ for better citizen governance
-
----
-
-## 📞 Support
-
-For queries and support, please reach out to the team through the hackathon platform.
-
----
-
-**Last Updated**: January 2026  
-**Version**: 1.0 (GFGBQ Edition)  
-**Hackathon**: GeeksforGeeks ByteQuest 2025
-
+- `bun run dev`: Start all applications in development mode
+- `bun run build`: Build all applications
+- `bun run dev:web`: Start only the web application
+- `bun run dev:server`: Start only the server
+- `bun run check-types`: Check TypeScript types across all apps
+- `bun run db:push`: Push schema changes to database
+- `bun run db:studio`: Open database studio UI

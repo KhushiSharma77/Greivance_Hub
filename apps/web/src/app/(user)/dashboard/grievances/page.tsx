@@ -6,12 +6,14 @@ import {
     MessageSquare,
     Filter,
     Search,
+    Eye,
+    Pencil,
+    Trash2,
     Clock,
     CheckCircle2,
     AlertCircle,
     TrendingUp,
     MapPin,
-    ChevronRight,
     FileText,
     Plus
 } from "lucide-react"
@@ -20,14 +22,47 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { api, ApiError } from "@/lib/api"
+import { GrievanceDetailsDialog } from "@/components/grievance-details-dialog"
+import { EditGrievanceDialog } from "@/components/edit-grievance-dialog"
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 
 interface Grievance {
     id: string;
     originalText: string;
-    category?: string;
+    translatedText?: string | null;
+    category?: string | null;
     status: "PENDING" | "IN_PROGRESS" | "RESOLVED" | "REJECTED";
+    priority?: "LOW" | "MEDIUM" | "HIGH";
     createdAt: string;
-    priority: "LOW" | "MEDIUM" | "HIGH";
+    updatedAt: string;
+    imageUrl?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    user?: {
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+    };
+    department?: {
+        id: string;
+        name: string;
+        City: string;
+    } | null;
+    assignedOfficer?: {
+        id: string;
+        name: string;
+        email: string;
+    } | null;
+    aiMetadata?: {
+        id: string;
+        category: string | null;
+        priority: string | null;
+        sentiment: string | null;
+        urgency: number | null;
+        keywords: any;
+        summary: string | null;
+    } | null;
 }
 
 export default function CitizenGrievancesPage() {
@@ -37,6 +72,10 @@ export default function CitizenGrievancesPage() {
     const [error, setError] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState("")
     const [statusFilter, setStatusFilter] = useState<string>("ALL")
+    const [selectedGrievance, setSelectedGrievance] = useState<Grievance | null>(null)
+    const [detailsOpen, setDetailsOpen] = useState(false)
+    const [editOpen, setEditOpen] = useState(false)
+    const [deleteOpen, setDeleteOpen] = useState(false)
 
     useEffect(() => {
         fetchData()
@@ -64,6 +103,10 @@ export default function CitizenGrievancesPage() {
         } finally {
             setIsLoading(false)
         }
+    }
+
+    const handleOperationSuccess = () => {
+        fetchData()
     }
 
     const filterGrievances = () => {
@@ -134,6 +177,25 @@ export default function CitizenGrievancesPage() {
                     </Link>
                 </div>
             </div>
+
+            {/* Dialog Components */}
+            <GrievanceDetailsDialog
+                grievance={selectedGrievance}
+                open={detailsOpen}
+                onOpenChange={setDetailsOpen}
+            />
+            <EditGrievanceDialog
+                grievance={selectedGrievance}
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                onSuccess={handleOperationSuccess}
+            />
+            <DeleteConfirmationDialog
+                grievance={selectedGrievance}
+                open={deleteOpen}
+                onOpenChange={setDeleteOpen}
+                onSuccess={handleOperationSuccess}
+            />
 
             <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -217,7 +279,7 @@ export default function CitizenGrievancesPage() {
                                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${getStatusStyles(grievance.status)}`}>
                                                 {grievance.status.replace("_", " ")}
                                             </span>
-                                            {getPriorityBadge(grievance.priority)}
+                                            {grievance.priority && getPriorityBadge(grievance.priority)}
                                             <span className="text-xs text-slate-400 flex items-center gap-1 ml-auto">
                                                 <Clock className="w-3 h-3" />
                                                 {new Date(grievance.createdAt).toLocaleDateString('en-US', {
@@ -237,7 +299,8 @@ export default function CitizenGrievancesPage() {
                                             </span>
                                             <span className="flex items-center gap-1">
                                                 <MapPin className="w-4 h-4" />
-                                                Kolkata, WB
+                                                {grievance.department?.City ??
+                                                    `${grievance.latitude}, ${grievance.longitude}`}
                                             </span>
                                         </div>
                                     </div>
@@ -245,15 +308,43 @@ export default function CitizenGrievancesPage() {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="rounded-xl"
+                                            className="rounded-xl gap-2"
+                                            onClick={() => {
+                                                setSelectedGrievance(grievance)
+                                                setDetailsOpen(true)
+                                            }}
                                         >
-                                            View Details
+                                            <Eye className="w-4 h-4" />
+                                            View
                                         </Button>
-                                        <div className="md:opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button variant="ghost" size="icon" className="rounded-full">
-                                                <ChevronRight className="w-5 h-5" />
-                                            </Button>
-                                        </div>
+                                        {grievance.status === "PENDING" && (
+                                            <>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="rounded-xl gap-2"
+                                                    onClick={() => {
+                                                        setSelectedGrievance(grievance)
+                                                        setEditOpen(true)
+                                                    }}
+                                                >
+                                                    <Pencil className="w-4 h-4" />
+                                                    Edit
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="rounded-xl gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                    onClick={() => {
+                                                        setSelectedGrievance(grievance)
+                                                        setDeleteOpen(true)
+                                                    }}
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                    Delete
+                                                </Button>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>

@@ -1,8 +1,3 @@
-/**
- * Duplicate Detection Queue
- * Handles duplicate grievance detection jobs
- */
-
 import { duplicateProcessor } from "../processors/duplicate.processor";
 import { redisConnection } from "../utils/redis";
 import { Queue,Worker } from "bullmq";

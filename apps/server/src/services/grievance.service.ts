@@ -53,7 +53,6 @@ export async function createGrievance(data: CreateGrievanceData, file?: MulterFi
     if (file) {
         imageUrl = await uploadImage(supabase, file, "Grievance");
     }
-    console.log("imageUrl", imageUrl);
     const grievance = await prisma.grievance.create({
         data: {
             userId: data.userId,
@@ -168,7 +167,7 @@ export async function getGrievanceById(grievanceId: string): Promise<Prisma.Grie
 export async function updateGrievance(
     grievanceId: string,
     userId: string,
-    file: MulterFile,
+    file: MulterFile | undefined,
     data: UpdateGrievanceData,
 ): Promise<Prisma.GrievanceGetPayload<{
     include: {
@@ -218,6 +217,8 @@ export async function updateGrievance(
                 select: {
                     id: true,
                     name: true,
+                    email: true,
+                    phone: true,
                 },
             },
             department: true,
