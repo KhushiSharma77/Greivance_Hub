@@ -2,8 +2,7 @@ import prisma from "@team-call-of-code/db";
 import { env } from "@team-call-of-code/env/server";
 import cors from "cors";
 import express from "express";
-import { multilingualQueue } from "./lib/multilingual.queue";
-
+import grievanceRoutes from "./routes/v1/processor.routes"
 
 const app = express();
 
