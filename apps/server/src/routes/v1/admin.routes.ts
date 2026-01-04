@@ -7,6 +7,7 @@ import {
     createDepartmentSchema,
     createUserSchema,
     assignDepartmentSchema,
+    assignOfficerSchema,
     userIdSchema,
 } from "../../types/admin.types";
 import type { Request, Response } from "express";
@@ -111,6 +112,66 @@ adminRouter.patch(
             success: true,
             message: "Department assigned to user successfully",
             data: user,
+        });
+    }),
+);
+
+/**
+ * @route   POST /api/v1/admin/departments/:departmentId/assign-officer
+ * @desc    Assign officer to department
+ * @access  Private (Admin)
+ */
+adminRouter.post(
+    "/departments/:departmentId/assign-officer",
+    validateBody(assignOfficerSchema),
+    asyncHandler(async (req: Request, res: Response) => {
+        await adminService.assignOfficerToDepartment(
+            req.params.departmentId!,
+            req.body.officerId
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Officer assigned to department successfully",
+        });
+    }),
+);
+
+
+
+/**
+ * @route   GET /api/v1/admin/departments/:departmentId/officers
+ * @desc    Get officers of a department
+ * @access  Private (Admin)
+ */
+adminRouter.get(
+    "/departments/:departmentId/officers",
+    validateParams(assignDepartmentSchema), // Reusing schema as it checks departmentId
+    asyncHandler(async (req: Request, res: Response) => {
+        const officers = await adminService.getDepartmentOfficers(req.params.departmentId!);
+
+        res.status(200).json({
+            success: true,
+            message: "Department officers retrieved successfully",
+            data: officers,
+        });
+    }),
+);
+
+/**
+ * @route   DELETE /api/v1/admin/departments/:departmentId/officers/:officerId
+ * @desc    Remove officer from department
+ * @access  Private (Admin)
+ */
+adminRouter.delete(
+    "/departments/:departmentId/officers/:officerId",
+    // We could validate params here, but simple ID check is enough for now
+    asyncHandler(async (req: Request, res: Response) => {
+        await adminService.removeOfficerFromDepartment(req.params.officerId!);
+
+        res.status(200).json({
+            success: true,
+            message: "Officer removed from department successfully",
         });
     }),
 );

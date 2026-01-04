@@ -246,7 +246,8 @@ export default function UserDashboard() {
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <MapPin className="w-4 h-4" />
-                                                        Kolkata, WB
+                                                        {grievance.department?.City ??
+                                                            `${grievance.latitude}, ${grievance.longitude}`}
                                                     </span>
                                                 </div>
                                             </div>

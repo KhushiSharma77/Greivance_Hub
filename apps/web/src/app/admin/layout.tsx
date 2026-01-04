@@ -1,29 +1,28 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
     LayoutDashboard,
-    MessageSquare,
-    Bell,
-    Settings,
+    Building2,
+    Users,
     LogOut,
     User as UserIcon,
     Menu,
-    X
+    X,
+    ShieldCheck
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export default function OfficerLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const pathname = usePathname()
 
     const navItems = [
-        { icon: LayoutDashboard, label: "Dashboard", href: "/officer" as const },
-        { icon: MessageSquare, label: "Grievances", href: "/officer/grievances" as const },
-        { icon: Bell, label: "Notifications", href: "/officer/notifications" as const },
-        { icon: Settings, label: "Settings", href: "/officer/settings" as const },
+        { icon: LayoutDashboard, label: "Dashboard", href: "/admin" as const },
+        { icon: Building2, label: "Departments", href: "/admin/departments" as const },
+        { icon: Users, label: "Users", href: "/admin/users" as const },
     ]
 
     const handleLogout = () => {
@@ -42,11 +41,11 @@ export default function OfficerLayout({ children }: { children: React.ReactNode 
             `}>
                 <div className="h-full flex flex-col p-6">
                     <div className="flex items-center gap-2 mb-10">
-                        <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                            <MessageSquare className="w-6 h-6 text-white" />
+                        <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
+                            <ShieldCheck className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-                            GrievancePortal
+                        <span className="text-xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                            Admin Portal
                         </span>
                     </div>
 
@@ -61,7 +60,7 @@ export default function OfficerLayout({ children }: { children: React.ReactNode 
                                     className={`
                                         flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                                         ${isActive
-                                            ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/20"
+                                            ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/20"
                                             : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}
                                     `}
                                 >
@@ -99,15 +98,10 @@ export default function OfficerLayout({ children }: { children: React.ReactNode 
                     <div className="flex-1" />
 
                     <div className="flex items-center gap-4">
-                        <button className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full relative">
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
-                        </button>
-                        <div className="w-px h-6 bg-slate-200 dark:border-slate-800 mx-2" />
                         <div className="flex items-center gap-3">
                             <div className="text-right hidden sm:block">
-                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Officer</p>
-                                <p className="text-xs text-slate-500">Department Officer</p>
+                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Administrator</p>
+                                <p className="text-xs text-slate-500">System Admin</p>
                             </div>
                             <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full">
                                 <UserIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
