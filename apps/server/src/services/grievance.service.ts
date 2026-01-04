@@ -35,7 +35,7 @@ async function checkOwnership(grievanceId: string, userId: string): Promise<void
 /**
  * Create a new grievance
  */
-export async function createGrievance(data: CreateGrievanceData, file: MulterFile): Promise<Prisma.GrievanceGetPayload<{
+export async function createGrievance(data: CreateGrievanceData, file?: MulterFile): Promise<Prisma.GrievanceGetPayload<{
     include: {
         user: {
             select: {
@@ -218,8 +218,6 @@ export async function updateGrievance(
                 select: {
                     id: true,
                     name: true,
-                    email: true,
-                    phone: true,
                 },
             },
             department: true,

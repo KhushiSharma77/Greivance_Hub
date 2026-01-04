@@ -44,13 +44,23 @@ export const validate = (schema: any) => {
 export const validateBody = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-             console.log("Control reaching here1111");
+            console.log("=== Validating request body ===");
+            console.log("Body before validation:", JSON.stringify(req.body, null, 2));
+            console.log("Schema name:", schema?._def?.description || "Unknown schema");
+
             req.body = await schema.parseAsync(req.body);
+
+            console.log("Body after validation:", JSON.stringify(req.body, null, 2));
+            console.log("=== Validation successful ===");
             next();
         } catch (error) {
-            console.log("Control reaching here2222");
+            console.log("=== Validation failed ===");
+            console.log("Error:", error);
+
             if (error instanceof Error && error.name === "ZodError") {
                 const zodError = error as ZodError;
+                console.log("Zod errors:", JSON.stringify(zodError.errors, null, 2));
+
                 const errorMessages = zodError.errors.map((err) => ({
                     path: err.path.join("."),
                     message: err.message,

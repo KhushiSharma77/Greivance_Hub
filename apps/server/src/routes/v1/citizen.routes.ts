@@ -51,11 +51,19 @@ export default function citizenRouter(
         upload.single("photo"),
         parseData,
         asyncHandler(async (req: Request, res: Response) => {
-            console.log("Control reaching here");
-            if (!req.file) return res.status(400).json({
-                success: false,
-                message: "No file uploaded",
-            });
+            if (!req.file) {
+                const grievance = await grievanceService.createGrievance({
+                    userId: req.user!.id,
+                    ...req.body,
+                });
+
+                res.status(201).json({
+                success: true,
+                message: "Grievance created successfully",
+                data: grievance,
+            })
+            }
+
             const grievance = await grievanceService.createGrievance({
                 userId: req.user!.id,
                 ...req.body,
