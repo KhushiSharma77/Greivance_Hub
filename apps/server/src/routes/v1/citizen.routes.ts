@@ -11,6 +11,7 @@ import * as grievanceService from "../../services/grievance.service";
 import { type Multer } from 'multer'
 import { SupabaseClient } from '@supabase/supabase-js'
 import type { Request, Response, NextFunction } from "express";
+import { multilingualQueue } from "@/lib/multilingual.queue";
 
 function parseData(req: Request, res: Response, next: NextFunction) {
     if (req.body.data) {
@@ -70,7 +71,12 @@ export default function citizenRouter(
                 req.file
             );
 
-            return res.status(201).json({
+            await multilingualQueue.add("multilingual-process",{
+                grievanceId:grievance.id,
+                text:grievance.originalText
+            })
+
+            return res.status(202).json({
                 success: true,
                 message: "Grievance created successfully",
                 data: grievance,
