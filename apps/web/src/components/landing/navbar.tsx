@@ -60,7 +60,7 @@ export function Navbar() {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className="relative text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors hover:text-purple-700 dark:hover:text-purple-400"
+                                className="relative text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors hover:text-purple-700"
                             >
                                 {item.label}
                                 <span className="absolute -bottom-1 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full" />
