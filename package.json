@@ -28,9 +28,11 @@
     "db:migrate": "turbo -F @team-call-of-code/db db:migrate"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.89.0",
+    "@team-call-of-code/env": "workspace:*",
     "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@team-call-of-code/env": "workspace:*"
+    "uuid": "^13.0.0",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "turbo": "^2.6.3",

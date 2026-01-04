@@ -9,7 +9,46 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       type={type}
       data-slot="input"
       className={cn(
-        "dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 h-8 rounded-none border bg-transparent px-2.5 py-1 text-xs transition-colors file:h-6 file:text-xs file:font-medium focus-visible:ring-1 aria-invalid:ring-1 md:text-xs file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+        [
+          /* Base layout */
+          "w-full min-w-0",
+          "h-10 px-4",
+
+          /* Typography */
+          "text-sm text-gray-800",
+          "placeholder:text-gray-400",
+
+          /* Shape */
+          "rounded-xl",
+
+          /* Glassmorphism */
+          "bg-white/70 backdrop-blur-md",
+          "border border-purple-200/60",
+
+          /* Interaction */
+          "transition-all duration-200 ease-out",
+          "hover:border-purple-300",
+
+          /* Focus */
+          "focus-visible:outline-none",
+          "focus-visible:border-purple-500",
+          "focus-visible:ring-2 focus-visible:ring-purple-400/40",
+
+          /* Invalid */
+          "aria-invalid:border-red-400",
+          "aria-invalid:ring-red-400/30",
+
+          /* Disabled */
+          "disabled:cursor-not-allowed",
+          "disabled:opacity-50",
+          "disabled:bg-gray-100/70",
+
+          /* File input */
+          "file:border-0",
+          "file:bg-transparent",
+          "file:text-sm file:font-medium",
+          "file:text-purple-700",
+        ].join(" "),
         className,
       )}
       {...props}

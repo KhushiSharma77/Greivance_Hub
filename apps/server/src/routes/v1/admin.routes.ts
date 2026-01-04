@@ -2,81 +2,36 @@ import { Router } from "express";
 import { authenticate } from "../../middleware/authentication";
 import { isAdmin } from "../../middleware/authorization";
 import { asyncHandler } from "../../lib/error-handler";
+import { validateBody, validateParams } from "../../middleware/validate";
+import {
+    createDepartmentSchema,
+    createUserSchema,
+    assignDepartmentSchema,
+    userIdSchema,
+} from "../../types/admin.types";
+import * as adminService from "../../services/admin.service";
 
-const router = Router();
+const adminRouter: Router = Router();
 
 // All admin routes require authentication
-router.use(authenticate);
-router.use(isAdmin);
+adminRouter.use(authenticate);
+adminRouter.use(isAdmin);
 
 /**
- * @route   GET /api/v1/admin/grievances
- * @desc    Get all grievances (with filtering and pagination)
+ * @route   POST /api/v1/admin/departments
+ * @desc    Create a new department
  * @access  Private (Admin)
  */
-router.get(
-    "/grievances",
+adminRouter.post(
+    "/departments",
+    validateBody(createDepartmentSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement get all grievances logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get all grievances endpoint not implemented yet",
-            },
-        });
-    }),
-);
+        const department = await adminService.createDepartment(req.body);
 
-/**
- * @route   GET /api/v1/admin/grievances/:id
- * @desc    Get a specific grievance by ID
- * @access  Private (Admin)
- */
-router.get(
-    "/grievances/:id",
-    asyncHandler(async (req, res) => {
-        // TODO: Implement get grievance by ID logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get grievance by ID endpoint not implemented yet",
-            },
-        });
-    }),
-);
-
-/**
- * @route   PATCH /api/v1/admin/grievances/:id/assign
- * @desc    Assign a grievance to an officer
- * @access  Private (Admin)
- */
-router.patch(
-    "/grievances/:id/assign",
-    asyncHandler(async (req, res) => {
-        // TODO: Implement assign grievance logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Assign grievance endpoint not implemented yet",
-            },
-        });
-    }),
-);
-
-/**
- * @route   PATCH /api/v1/admin/grievances/:id/department
- * @desc    Assign a grievance to a department
- * @access  Private (Admin)
- */
-router.patch(
-    "/grievances/:id/department",
-    asyncHandler(async (req, res) => {
-        // TODO: Implement assign to department logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Assign to department endpoint not implemented yet",
-            },
+        res.status(201).json({
+            success: true,
+            message: "Department created successfully",
+            data: department,
         });
     }),
 );
@@ -86,125 +41,77 @@ router.patch(
  * @desc    Get all departments
  * @access  Private (Admin)
  */
-router.get(
+adminRouter.get(
     "/departments",
     asyncHandler(async (req, res) => {
-        // TODO: Implement get departments logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get departments endpoint not implemented yet",
-            },
+        const departments = await adminService.getAllDepartments();
+
+        res.status(200).json({
+            success: true,
+            message: "Departments retrieved successfully",
+            data: departments,
         });
     }),
 );
 
 /**
- * @route   POST /api/v1/admin/departments
- * @desc    Create a new department
+ * @route   POST /api/v1/admin/users
+ * @desc    Create a new user (officer or admin)
  * @access  Private (Admin)
  */
-router.post(
-    "/departments",
+adminRouter.post(
+    "/users",
+    validateBody(createUserSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement create department logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Create department endpoint not implemented yet",
-            },
-        });
-    }),
-);
+        const user = await adminService.createUser(req.body);
 
-/**
- * @route   PATCH /api/v1/admin/departments/:id
- * @desc    Update a department
- * @access  Private (Admin)
- */
-router.patch(
-    "/departments/:id",
-    asyncHandler(async (req, res) => {
-        // TODO: Implement update department logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Update department endpoint not implemented yet",
-            },
-        });
-    }),
-);
-
-/**
- * @route   DELETE /api/v1/admin/departments/:id
- * @desc    Delete a department
- * @access  Private (Admin)
- */
-router.delete(
-    "/departments/:id",
-    asyncHandler(async (req, res) => {
-        // TODO: Implement delete department logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Delete department endpoint not implemented yet",
-            },
+        res.status(201).json({
+            success: true,
+            message: "User created successfully",
+            data: user,
         });
     }),
 );
 
 /**
  * @route   GET /api/v1/admin/users
- * @desc    Get all users (with filtering and pagination)
+ * @desc    Get all users (officers and admins)
  * @access  Private (Admin)
  */
-router.get(
+adminRouter.get(
     "/users",
     asyncHandler(async (req, res) => {
-        // TODO: Implement get all users logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get all users endpoint not implemented yet",
-            },
+        const users = await adminService.getAllUsers();
+
+        res.status(200).json({
+            success: true,
+            message: "Users retrieved successfully",
+            data: users,
         });
     }),
 );
 
 /**
- * @route   PATCH /api/v1/admin/users/:id/role
- * @desc    Update user role
+ * @route   PATCH /api/v1/admin/users/:id/department
+ * @desc    Assign department to user
  * @access  Private (Admin)
  */
-router.patch(
-    "/users/:id/role",
+adminRouter.patch(
+    "/users/:id/department",
+    validateParams(userIdSchema),
+    validateBody(assignDepartmentSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement update user role logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Update user role endpoint not implemented yet",
-            },
+        const user = await adminService.assignDepartmentToUser(
+            req.params.id!,
+            req.body.departmentId,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Department assigned to user successfully",
+            data: user,
         });
     }),
 );
 
-/**
- * @route   GET /api/v1/admin/dashboard/stats
- * @desc    Get admin dashboard statistics
- * @access  Private (Admin)
- */
-router.get(
-    "/dashboard/stats",
-    asyncHandler(async (req, res) => {
-        // TODO: Implement dashboard stats logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Dashboard stats endpoint not implemented yet",
-            },
-        });
-    }),
-);
-
-export default router;
+export default adminRouter;

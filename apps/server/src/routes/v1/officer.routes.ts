@@ -2,101 +2,90 @@ import { Router } from "express";
 import { authenticate } from "../../middleware/authentication";
 import { isOfficer } from "../../middleware/authorization";
 import { asyncHandler } from "../../lib/error-handler";
+import { validateBody, validateParams } from "../../middleware/validate";
+import { updateGrievanceStatusSchema } from "../../types/officer.types";
+import { grievanceIdSchema } from "../../types/grievance.types";
+import { getGrievanceById } from "../../services/grievance.service";
+import * as officerService from "../../services/officer.service";
+import prisma from "@team-call-of-code/db";
+import { ForbiddenError } from "../../lib/error-handler";
 
-const router = Router();
+const officerRouter: Router = Router();
 
 // All officer routes require authentication
-router.use(authenticate);
-router.use(isOfficer);
+officerRouter.use(authenticate);
+officerRouter.use(isOfficer);
 
 /**
  * @route   GET /api/v1/officer/grievances
- * @desc    Get all grievances assigned to the officer
+ * @desc    Get all grievances for officer's department
  * @access  Private (Officer)
  */
-router.get(
+officerRouter.get(
     "/grievances",
     asyncHandler(async (req, res) => {
-        // TODO: Implement get assigned grievances logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get assigned grievances endpoint not implemented yet",
-            },
+        // Get officer's department
+        const officer = await prisma.user.findUnique({
+            where: { id: req.user!.id },
+            select: { departmentId: true },
+        });
+
+        if (!officer?.departmentId) {
+            throw new ForbiddenError("Officer must be assigned to a department");
+        }
+
+        const grievances = await officerService.getAllGrievancesByDepartment(officer.departmentId);
+
+        res.status(200).json({
+            success: true,
+            message: "Grievances retrieved successfully",
+            data: grievances,
         });
     }),
 );
 
 /**
  * @route   GET /api/v1/officer/grievances/:id
- * @desc    Get a specific grievance by ID (only if assigned to the officer)
+ * @desc    Get a specific grievance by ID with AI metadata
  * @access  Private (Officer)
  */
-router.get(
+officerRouter.get(
     "/grievances/:id",
+    validateParams(grievanceIdSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement get grievance by ID logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get grievance by ID endpoint not implemented yet",
-            },
+        const grievance = await getGrievanceById(
+            req.params.id!,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Grievance retrieved successfully",
+            data: grievance,
         });
     }),
 );
 
 /**
  * @route   PATCH /api/v1/officer/grievances/:id/status
- * @desc    Update grievance status (only if assigned to the officer)
+ * @desc    Update grievance status
  * @access  Private (Officer)
  */
-router.patch(
+officerRouter.patch(
     "/grievances/:id/status",
+    validateParams(grievanceIdSchema),
+    validateBody(updateGrievanceStatusSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement update grievance status logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Update grievance status endpoint not implemented yet",
-            },
+        const grievance = await officerService.updateGrievanceStatus(
+            req.params.id!,
+            req.body.status,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Grievance status updated successfully",
+            data: grievance,
         });
     }),
 );
 
-/**
- * @route   POST /api/v1/officer/grievances/:id/comments
- * @desc    Add a comment to a grievance
- * @access  Private (Officer)
- */
-router.post(
-    "/grievances/:id/comments",
-    asyncHandler(async (req, res) => {
-        // TODO: Implement add comment logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Add comment endpoint not implemented yet",
-            },
-        });
-    }),
-);
-
-/**
- * @route   GET /api/v1/officer/dashboard/stats
- * @desc    Get officer dashboard statistics
- * @access  Private (Officer)
- */
-router.get(
-    "/dashboard/stats",
-    asyncHandler(async (req, res) => {
-        // TODO: Implement dashboard stats logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Dashboard stats endpoint not implemented yet",
-            },
-        });
-    }),
-);
-
-export default router;
+export default officerRouter;

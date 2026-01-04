@@ -2,29 +2,40 @@ import { Router } from "express";
 import { authenticate } from "../../middleware/authentication";
 import { isCitizen } from "../../middleware/authorization";
 import { asyncHandler } from "../../lib/error-handler";
-import { createLimiter } from "../../middleware/rate-limit";
+import { grievanceLimiter } from "../../middleware/rate-limit";
+import { validateBody, validateParams } from "../../middleware/validate";
+import {
+    createGrievanceSchema,
+    updateGrievanceSchema,
+    grievanceIdSchema,
+} from "../../types/grievance.types";
+import * as grievanceService from "../../services/grievance.service";
 
-const router = Router();
+const citizenRouter: Router = Router();
 
 // All citizen routes require authentication
-router.use(authenticate);
-router.use(isCitizen);
+citizenRouter.use(authenticate);
+citizenRouter.use(isCitizen);
 
 /**
  * @route   POST /api/v1/citizen/grievances
  * @desc    Create a new grievance
  * @access  Private (Citizen)
  */
-router.post(
+citizenRouter.post(
     "/grievances",
-    createLimiter,
+    grievanceLimiter,
+    validateBody(createGrievanceSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement grievance creation logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Create grievance endpoint not implemented yet",
-            },
+        const grievance = await grievanceService.createGrievance({
+            userId: req.user!.id,
+            ...req.body,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Grievance created successfully",
+            data: grievance,
         });
     }),
 );
@@ -34,15 +45,17 @@ router.post(
  * @desc    Get all grievances for the current citizen
  * @access  Private (Citizen)
  */
-router.get(
+citizenRouter.get(
     "/grievances",
     asyncHandler(async (req, res) => {
-        // TODO: Implement get user grievances logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get grievances endpoint not implemented yet",
-            },
+        const grievances = await grievanceService.getGrievancesByUserId(
+            req.user!.id,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Grievances retrieved successfully",
+            data: grievances,
         });
     }),
 );
@@ -52,15 +65,18 @@ router.get(
  * @desc    Get a specific grievance by ID (only if it belongs to the user)
  * @access  Private (Citizen)
  */
-router.get(
+citizenRouter.get(
     "/grievances/:id",
+    validateParams(grievanceIdSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement get grievance by ID logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Get grievance by ID endpoint not implemented yet",
-            },
+        const grievance = await grievanceService.getGrievanceById(
+            req.params.id!,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Grievance retrieved successfully",
+            data: grievance,
         });
     }),
 );
@@ -70,15 +86,21 @@ router.get(
  * @desc    Update a grievance (only if it belongs to the user and is in PENDING status)
  * @access  Private (Citizen)
  */
-router.patch(
+citizenRouter.patch(
     "/grievances/:id",
+    validateParams(grievanceIdSchema),
+    validateBody(updateGrievanceSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement update grievance logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Update grievance endpoint not implemented yet",
-            },
+        const grievance = await grievanceService.updateGrievance(
+            req.params.id!,
+            req.user!.id,
+            req.body,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Grievance updated successfully",
+            data: grievance,
         });
     }),
 );
@@ -88,17 +110,17 @@ router.patch(
  * @desc    Delete a grievance (only if it belongs to the user and is in PENDING status)
  * @access  Private (Citizen)
  */
-router.delete(
+citizenRouter.delete(
     "/grievances/:id",
+    validateParams(grievanceIdSchema),
     asyncHandler(async (req, res) => {
-        // TODO: Implement delete grievance logic
-        res.status(501).json({
-            success: false,
-            error: {
-                message: "Delete grievance endpoint not implemented yet",
-            },
+        await grievanceService.deleteGrievance(req.params.id!, req.user!.id);
+
+        res.status(200).json({
+            success: true,
+            message: "Grievance deleted successfully",
         });
     }),
 );
 
-export default router;
+export default citizenRouter;
