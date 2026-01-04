@@ -8,19 +8,67 @@ function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "border-input dark:bg-input/30 data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary data-checked:border-primary aria-invalid:aria-checked:border-primary aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 flex size-4 items-center justify-center rounded-none border transition-colors group-has-disabled/field:opacity-50 focus-visible:ring-1 aria-invalid:ring-1 peer relative shrink-0 outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50",
+        [
+          // Base layout
+          "relative shrink-0",
+          "flex items-center justify-center",
+          "size-4",
+
+          // Shape
+          "rounded-md",
+
+          // Glass base
+          "bg-white/70 backdrop-blur-sm",
+          "border border-purple-200/60",
+
+          // Checked state
+          "data-checked:bg-gradient-to-br data-checked:from-violet-600 data-checked:to-blue-600",
+          "data-checked:border-transparent",
+          "data-checked:text-white",
+          "shadow-sm",
+
+          // Hover & focus
+          "transition-all duration-200 ease-out",
+          "hover:border-purple-300",
+          "focus-visible:ring-2 focus-visible:ring-purple-400/40",
+          "focus-visible:ring-offset-2",
+
+          // Invalid
+          "aria-invalid:border-red-400",
+          "aria-invalid:ring-red-400/30",
+
+          // Disabled
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "group-has-disabled/field:opacity-50",
+
+          // Click target expansion
+          "after:absolute after:-inset-x-3 after:-inset-y-2",
+
+        ].join(" "),
         className,
       )}
       {...props}
     >
       <CheckboxPrimitive.Indicator
         data-slot="checkbox-indicator"
-        className="[&>svg]:size-3.5 grid place-content-center text-current transition-none"
+        className={cn(
+          [
+            "grid place-content-center",
+            "text-current",
+
+            // Check animation
+            "transition-transform duration-200 ease-out",
+            "data-checked:scale-100 scale-90",
+
+            "[&>svg]:size-3.5",
+          ].join(" "),
+        )}
       >
         <CheckIcon />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   );
 }
+
 
 export { Checkbox };

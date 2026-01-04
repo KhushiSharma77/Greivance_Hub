@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "team-call-of-code",
-  description: "team-call-of-code",
+  title: "GrievanceHub - AI-Powered Grievance Management",
+  description: "Transform how citizens report grievances with intelligent routing and transparent tracking",
 };
 
 export default function RootLayout({
@@ -30,10 +30,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <div className="grid grid-rows-[auto_1fr] h-svh">
-            <Header />
-            {children}
-          </div>
+          <Header />
+          {children}
         </Providers>
       </body>
     </html>

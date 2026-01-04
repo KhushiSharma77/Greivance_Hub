@@ -12,6 +12,7 @@ export const supabase = createClient(
   env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
+
 const app = express();
 
 app.use(
@@ -29,7 +30,7 @@ const upload = multer({
 });
 
 
-app.get("/", (_req, res) => {
+app.get("/", async (_req, res) => {
   res.status(200).send("OK");
 });
 

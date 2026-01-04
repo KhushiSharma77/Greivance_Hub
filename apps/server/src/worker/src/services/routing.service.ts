@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import type {
   CreateGrievanceInput,
   GrievanceDTO,
@@ -8,41 +9,37 @@ export async function createGrievance(
   input: CreateGrievanceInput
 ): Promise<GrievanceDTO> {
   const { departmentName, grievance } = input;
+=======
+import { geminiModel } from "./gemini.service";
+import { ROUTING_PROMPT } from "../prompts/routing.prompts";
+import { extractJsonFromText } from "../utils/extractJson";
 
-  const {
-    userId,
-    originalText,
-    translatedText,
-    category,
-    priority,
-    latitude,
-    longitude,
-  } = grievance;
+>>>>>>> origin
 
-  // 1️⃣ Fetch department by name
-  const department = await prisma.department.findFirst({
-    where: { name: departmentName },
-  });
+type RoutingResult = {
+  city: string;
+  department: string;
+  confidence: number;
+};
 
-  if (!department) {
-    throw new Error(`Department not found: ${departmentName}`);
-  }
+export async function routeGrievanceText(params: {
+  normalizedText: string;
+  category: string;
+  latitude: number;
+  longitude: number;
+}): Promise<RoutingResult> {
+  const { normalizedText, category, latitude, longitude } = params;
 
-  // 2️⃣ Create grievance (Prisma internal)
-  const created = await prisma.grievance.create({
-    data: {
-      userId,
-      originalText,
-      translatedText,
+  const result = await geminiModel.generateContent(
+    ROUTING_PROMPT(
+      normalizedText,
       category,
-      priority,
-      status: "PENDING", // string literal, not Prisma enum
-      departmentId: department.id,
       latitude,
-      longitude,
-    },
-  });
+      longitude
+    )
+  );
 
+<<<<<<< HEAD
   // 3️⃣ Map Prisma model → Domain DTO
   return {
     id: created.id,
@@ -60,4 +57,29 @@ export async function createGrievance(
     createdAt: created.createdAt,
     updatedAt: created.updatedAt,
   };
+=======
+  const responseText = result.response.text();
+
+  try {
+    const data = extractJsonFromText(responseText) as RoutingResult;
+
+    // 🔐 Validate confidence
+    if (
+      typeof data.confidence !== "number" ||
+      data.confidence < 0 ||
+      data.confidence > 1
+    ) {
+      throw new Error("Invalid confidence score from Gemini");
+    }
+
+    return {
+      city: data.city || "Unknown",
+      department: data.department,
+      confidence: data.confidence,
+    };
+  } catch (err) {
+    console.error("Raw Gemini Response:", responseText);
+    throw new Error("Invalid JSON from Gemini (routing stage)");
+  }
+>>>>>>> origin
 }

@@ -1,47 +1,24 @@
-/**
- * Worker Bootstrap
- * Entry point for BullMQ workers
- */
-
 import logger from "../../lib/logger";
+import "./queues/grievance.queue";
+import "./queues/duplicate.queue";
+import "./queues/multilingual.queue";
+import "./queues/routing.queue";
 
-// TODO: Import and initialize workers
-// import { grievanceWorker } from "./workers/grievance.worker";
-// import { duplicateWorker } from "./workers/duplicate.worker";
-// import { routingWorker } from "./workers/routing.worker";
+logger.info("BullMQ workers started 🚀");
 
-const startWorkers = async () => {
-    try {
-        logger.info("Starting BullMQ workers...");
+const shutdown = async (signal: string) => {
+  logger.info({ signal }, "Shutting down workers gracefully...");
 
-        // TODO: Initialize workers
-        // await grievanceWorker.run();
-        // await duplicateWorker.run();
-        // await routingWorker.run();
+ 
+//   await Promise.all([
+//     grievanceWorker.close(),
+//     duplicateWorker.close(),
+//     multilingualWorker.close(),
+//     routingWorker.close(),
+//   ]);
 
-        logger.info("All workers started successfully");
-    } catch (error) {
-        logger.error({ err: error }, "Failed to start workers");
-        process.exit(1);
-    }
+  process.exit(0);
 };
 
-// Handle graceful shutdown
-process.on("SIGINT", async () => {
-    logger.info("Received SIGINT, shutting down workers...");
-    // TODO: Close workers gracefully
-    process.exit(0);
-});
-
-process.on("SIGTERM", async () => {
-    logger.info("Received SIGTERM, shutting down workers...");
-    // TODO: Close workers gracefully
-    process.exit(0);
-});
-
-// Start workers if this is the main module
-if (require.main === module) {
-    startWorkers();
-}
-
-export { startWorkers };
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
