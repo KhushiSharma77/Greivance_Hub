@@ -1,10 +1,29 @@
-import prisma from "@team-call-of-code/db";
+import prisma, { Prisma, GrievanceStatus } from "@team-call-of-code/db";
 import { NotFoundError } from "../lib/error-handler";
 
 /**
  * Get all grievances for officer panel (filtered by officer's department)
  */
-export async function getAllGrievancesByDepartment(departmentId: string) {
+export async function getAllGrievancesByDepartment(departmentId: string): Promise<Prisma.GrievanceGetPayload<{
+    include: {
+        user: {
+            select: {
+                id: true;
+                name: true;
+                email: true;
+                phone: true;
+            };
+        };
+        department: true;
+        assignedOfficer: {
+            select: {
+                id: true;
+                name: true;
+                email: true;
+            };
+        };
+    };
+}>[]> {
     const grievances = await prisma.grievance.findMany({
         where: {
             departmentId,
@@ -39,8 +58,27 @@ export async function getAllGrievancesByDepartment(departmentId: string) {
  */
 export async function updateGrievanceStatus(
     grievanceId: string,
-    status: string,
-) {
+    status: GrievanceStatus,
+): Promise<Prisma.GrievanceGetPayload<{
+    include: {
+        user: {
+            select: {
+                id: true;
+                name: true;
+                email: true;
+                phone: true;
+            };
+        };
+        department: true;
+        assignedOfficer: {
+            select: {
+                id: true;
+                name: true;
+                email: true;
+            };
+        };
+    };
+}>> {
     // Check if grievance exists
     const existingGrievance = await prisma.grievance.findUnique({
         where: { id: grievanceId },

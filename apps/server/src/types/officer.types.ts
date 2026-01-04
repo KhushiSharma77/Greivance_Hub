@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { GrievanceStatus } from "@team-call-of-code/db";
 
 // ==================== Update Grievance Status ====================
 export const updateGrievanceStatusSchema = z.object({
-    status: z.enum(["PENDING", "ANALYZED", "IN_PROGRESS", "RESOLVED", "CLOSED"], {
-        errorMap: () => ({ message: "Invalid status value" }),
+    status: z.nativeEnum(GrievanceStatus, {
+        error: "Invalid status value",
     }),
 });
 

@@ -2,12 +2,13 @@
 import "express";
 import { File as MulterFile } from "multer";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { CreateGrievanceInput } from "./grievance.types";
 
 declare global {
   namespace Express {
     interface Request {
       /** Populated by multer.single(…) */
-      file?: MulterFile;
+      file?: MulterFile | null;
       /** In case you ever use multer.fields(…) or .array(…) */
       files?: MulterFile[] | { [fieldname: string]: MulterFile[] };
 
@@ -17,10 +18,15 @@ declare global {
       /** Only if you choose to inject supabase into `req` via middleware */
       supabase?: SupabaseClient;
 
-      projectId ?: string;
+      projectId?: string;
 
-      achievementId ?: string;
-      
+      achievementId?: string;
+
+      /** User object from authentication middleware */
+      user?: {
+        id: string;
+        role: "citizen" | "officer" | "admin";
+      };
     }
   }
 }

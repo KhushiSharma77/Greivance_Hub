@@ -34,6 +34,14 @@ export class ApiError extends Error {
 }
 
 export const api = {
+    getAuthHeaders(isFormData = false) {
+        const token = localStorage.getItem("auth_token");
+        return {
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
+            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        };
+    },
+
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
         try {
             const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
@@ -52,7 +60,6 @@ export const api = {
                     response.status
                 );
             }
-
             return data;
         } catch (error) {
             if (error instanceof ApiError) {
@@ -61,4 +68,127 @@ export const api = {
             throw new ApiError("Network error. Please check your connection.");
         }
     },
+
+    async getGrievances() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/citizen/grievances`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch grievances", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching grievances");
+        }
+    },
+
+    async createGrievance(payload: FormData | any) {
+        try {
+            const isFormData = payload instanceof FormData;
+            const response = await fetch(`${API_BASE_URL}/api/v1/citizen/grievances`, {
+                method: "POST",
+                headers: this.getAuthHeaders(isFormData),
+                body: isFormData ? payload : JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to create grievance", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while creating grievance");
+        }
+    },
+
+    async getGrievanceById(id: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/citizen/grievances/${id}`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch grievance", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching grievance");
+        }
+    },
+
+    async updateGrievance(id: string, payload: FormData | any) {
+        try {
+            const isFormData = payload instanceof FormData;
+            const response = await fetch(`${API_BASE_URL}/api/v1/citizen/grievances/${id}`, {
+                method: "PATCH",
+                headers: this.getAuthHeaders(isFormData),
+                body: isFormData ? payload : JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to update grievance", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while updating grievance");
+        }
+    },
+
+    async deleteGrievance(id: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/citizen/grievances/${id}`, {
+                method: "DELETE",
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to delete grievance", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while deleting grievance");
+        }
+    },
+
+    // Officer API methods
+    async getOfficerGrievances() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/officer/grievances`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch officer grievances", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching officer grievances");
+        }
+    },
+
+    async getOfficerGrievanceById(id: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/officer/grievances/${id}`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch grievance", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching grievance");
+        }
+    },
+
+    async updateGrievanceStatus(id: string, status: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/officer/grievances/${id}/status`, {
+                method: "PATCH",
+                headers: this.getAuthHeaders(),
+                body: JSON.stringify({ status }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to update grievance status", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while updating grievance status");
+        }
+    }
 };
+

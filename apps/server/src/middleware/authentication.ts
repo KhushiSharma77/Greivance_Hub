@@ -3,17 +3,6 @@ import jwt from "jsonwebtoken";
 import { UnauthorizedError } from "../lib/error-handler";
 import { env } from "@team-call-of-code/env/server";
 
-// Extend Express Request type to include user
-declare global {
-    namespace Express {
-        interface Request {
-            user?: {
-                id: string;
-                role: "citizen" | "officer" | "admin";
-            };
-        }
-    }
-}
 
 export interface JWTPayload {
     id: string;

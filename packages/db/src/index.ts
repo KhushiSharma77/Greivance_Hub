@@ -3,6 +3,8 @@ import { env } from "@team-call-of-code/env/server";
 
 import { PrismaClient } from "../prisma/generated/client";
 
+export * from "../prisma/generated/client";
+
 const adapter = new PrismaPg({
   connectionString: env.DATABASE_URL,
 });

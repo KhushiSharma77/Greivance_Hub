@@ -9,11 +9,14 @@ import { ValidationError } from "../lib/error-handler";
 export const validate = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync({
+            const result = await schema.parseAsync({
                 body: req.body,
                 query: req.query,
                 params: req.params,
             });
+            req.body = result.body;
+            req.query = result.query;
+            req.params = result.params;
             next();
         } catch (error) {
             if (error instanceof Error && error.name === "ZodError") {
@@ -41,11 +44,23 @@ export const validate = (schema: any) => {
 export const validateBody = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync(req.body);
+            console.log("=== Validating request body ===");
+            console.log("Body before validation:", JSON.stringify(req.body, null, 2));
+            console.log("Schema name:", schema?._def?.description || "Unknown schema");
+
+            req.body = await schema.parseAsync(req.body);
+
+            console.log("Body after validation:", JSON.stringify(req.body, null, 2));
+            console.log("=== Validation successful ===");
             next();
         } catch (error) {
+            console.log("=== Validation failed ===");
+            console.log("Error:", error);
+
             if (error instanceof Error && error.name === "ZodError") {
                 const zodError = error as ZodError;
+                console.log("Zod errors:", JSON.stringify(zodError.errors, null, 2));
+
                 const errorMessages = zodError.errors.map((err) => ({
                     path: err.path.join("."),
                     message: err.message,
@@ -69,7 +84,7 @@ export const validateBody = (schema: any) => {
 export const validateQuery = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync(req.query);
+            req.query = await schema.parseAsync(req.query);
             next();
         } catch (error) {
             if (error instanceof Error && error.name === "ZodError") {
@@ -97,7 +112,7 @@ export const validateQuery = (schema: any) => {
 export const validateParams = (schema: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await schema.parseAsync(req.params);
+            req.params = await schema.parseAsync(req.params);
             next();
         } catch (error) {
             if (error instanceof Error && error.name === "ZodError") {

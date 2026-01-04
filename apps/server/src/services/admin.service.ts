@@ -1,4 +1,4 @@
-import prisma from "@team-call-of-code/db";
+import prisma, { Prisma } from "@team-call-of-code/db";
 import { ValidationError, NotFoundError } from "../lib/error-handler";
 import { hashPassword } from "./auth.service";
 import type { CreateDepartmentData, CreateUserData } from "../types/admin.types";
@@ -6,7 +6,7 @@ import type { CreateDepartmentData, CreateUserData } from "../types/admin.types"
 /**
  * Create a new department
  */
-export async function createDepartment(data: CreateDepartmentData) {
+export async function createDepartment(data: CreateDepartmentData): Promise<Prisma.DepartmentGetPayload<{}>> {
     // Check if department with same name and city already exists
     const existingDepartment = await prisma.department.findFirst({
         where: {
@@ -32,7 +32,16 @@ export async function createDepartment(data: CreateDepartmentData) {
 /**
  * Get all departments
  */
-export async function getAllDepartments() {
+export async function getAllDepartments(): Promise<Prisma.DepartmentGetPayload<{
+    include: {
+        _count: {
+            select: {
+                users: true;
+                grievances: true;
+            };
+        };
+    };
+}>[]> {
     const departments = await prisma.department.findMany({
         include: {
             _count: {
@@ -51,7 +60,24 @@ export async function getAllDepartments() {
 /**
  * Create a new user (officer or admin)
  */
-export async function createUser(data: CreateUserData) {
+export async function createUser(data: CreateUserData): Promise<Prisma.UserGetPayload<{
+    select: {
+        id: true;
+        name: true;
+        email: true;
+        phone: true;
+        role: true;
+        departmentId: true;
+        department: {
+            select: {
+                id: true;
+                name: true;
+                City: true;
+            };
+        };
+        createdAt: true;
+    };
+}>> {
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
         where: {
@@ -113,7 +139,24 @@ export async function createUser(data: CreateUserData) {
 /**
  * Get all users (officers and admins)
  */
-export async function getAllUsers() {
+export async function getAllUsers(): Promise<Prisma.UserGetPayload<{
+    select: {
+        id: true;
+        name: true;
+        email: true;
+        phone: true;
+        role: true;
+        departmentId: true;
+        department: {
+            select: {
+                id: true;
+                name: true;
+                City: true;
+            };
+        };
+        createdAt: true;
+    };
+}>[]> {
     const users = await prisma.user.findMany({
         where: {
             role: {
@@ -145,7 +188,23 @@ export async function getAllUsers() {
 /**
  * Assign department to user
  */
-export async function assignDepartmentToUser(userId: string, departmentId: string) {
+export async function assignDepartmentToUser(userId: string, departmentId: string): Promise<Prisma.UserGetPayload<{
+    select: {
+        id: true;
+        name: true;
+        email: true;
+        phone: true;
+        role: true;
+        departmentId: true;
+        department: {
+            select: {
+                id: true;
+                name: true;
+                City: true;
+            };
+        };
+    };
+}>> {
     // Check if user exists
     const user = await prisma.user.findUnique({
         where: { id: userId },

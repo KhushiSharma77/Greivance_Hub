@@ -28,14 +28,9 @@ export async function uploadImage(
   fileUrl?: string,
 ): Promise<string> {
   const mime = file.mimetype;
-  // if (!mime) throw new ApiError("File type is missing", 400);
   if (!mime) throw new Error("File type is missing");
   const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (!allowedTypes.includes(mime)) {
-    // throw new ApiError(
-    //   "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.",
-    //   400,
-    // );
        throw new Error(
       "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.");
   }
@@ -50,7 +45,7 @@ export async function uploadImage(
   const filePath = `${folder}/${filename}`;
 
   const { error: uploadError } = await supabase.storage
-    .from("images")
+    .from("Grievance")
     .upload(filePath, file.buffer, {
       contentType: file.mimetype,
       upsert: true,
@@ -63,7 +58,7 @@ export async function uploadImage(
   }
 
   const { data: urlData } = supabase.storage
-    .from("images")
+    .from("Grievance")
     .getPublicUrl(filePath);
 
   if (!urlData?.publicUrl) {
@@ -82,7 +77,7 @@ export async function deleteImage(
   const { filePath } = extractFilePathAndNameFromUrl(fileUrl);
 
   const { error: deleteError } = await supabase.storage
-    .from("images")
+    .from("Grievance")
     .remove([filePath]);
 
   if (deleteError) {

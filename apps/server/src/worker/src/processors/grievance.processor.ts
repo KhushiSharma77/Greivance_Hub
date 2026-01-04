@@ -1,8 +1,13 @@
 import { Job } from 'bullmq';
 
+<<<<<<< HEAD
+import type { GrievanceDTO, PriorityLevel } from "@/types/grievance";
+import { createGrievance } from "../services/routing.service";
+=======
 import { duplicateQueue } from '../queues/duplicate.queue';
 import { grievanceEvents } from '../events/grievance.events';
 import { analyzeGrievanceText } from '../services/master.service';
+>>>>>>> origin
 
 export async function grievanceProcessor(job: Job) {
   const { grievanceId, text } = job.data;
