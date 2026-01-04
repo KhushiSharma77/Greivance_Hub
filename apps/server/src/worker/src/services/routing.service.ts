@@ -29,7 +29,7 @@ export async function routeGrievanceText(params: {
   const responseText = result.response.text();
 
   try {
-    const data = extractJsonFromText(responseText).data as RoutingResult;
+    const data = extractJsonFromText(responseText) as RoutingResult;
 
     // 🔐 Validate confidence
     if (

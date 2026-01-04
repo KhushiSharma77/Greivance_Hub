@@ -8,9 +8,9 @@ export async function analyzeGrievanceText(normalizedText: string) {
   );
 
   const responseText = result.response.text();
-
+ 
   try {
-    return ((extractJsonFromText(responseText)).data);
+    return (extractJsonFromText(responseText));
   } catch (err) {
     console.error("Raw Gemini Response:", responseText);
     throw new Error("Invalid JSON from Gemini (analysis stage)");
