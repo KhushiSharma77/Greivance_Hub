@@ -152,7 +152,7 @@ export default function UserDashboard() {
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Citizen Dashboard</h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-1">Monitor and track your posted grievances in real-time.</p>
                 </div>
-                <Link href="/dashboard/new-grievance">
+                <Link href="/dashboard/new-grievance" as any>
                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-6 rounded-2xl shadow-lg shadow-primary/20 gap-2 transition-all hover:scale-105 active:scale-95">
                         <Plus className="w-5 h-5" />
                         <span>Raise New Grievance</span>
