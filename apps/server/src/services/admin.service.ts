@@ -11,7 +11,7 @@ export async function createDepartment(data: CreateDepartmentData): Promise<Pris
     const existingDepartment = await prisma.department.findFirst({
         where: {
             name: data.name,
-            City: data.City,
+            City: data.city,
         },
     });
 
@@ -22,11 +22,19 @@ export async function createDepartment(data: CreateDepartmentData): Promise<Pris
     const department = await prisma.department.create({
         data: {
             name: data.name,
-            City: data.City,
+            City: data.city,
         },
     });
 
     return department;
+}
+
+/**
+ * Assign officer to department
+ */
+export async function assignOfficerToDepartment(departmentId: string, officerId: string): Promise<void> {
+    // Reuse the existing logic but flipped: we have departmentId and officerId
+    await assignDepartmentToUser(officerId, departmentId);
 }
 
 /**
@@ -205,14 +213,6 @@ export async function assignDepartmentToUser(userId: string, departmentId: strin
         };
     };
 }>> {
-    // Check if user exists
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-    });
-
-    if (!user) {
-        throw new NotFoundError("User not found");
-    }
 
     // Check if department exists
     const department = await prisma.department.findUnique({
@@ -247,4 +247,57 @@ export async function assignDepartmentToUser(userId: string, departmentId: strin
     });
 
     return updatedUser;
+}
+
+/**
+ * Get officers of a department
+ */
+export async function getDepartmentOfficers(departmentId: string): Promise<Prisma.UserGetPayload<{
+    select: {
+        id: true;
+        name: true;
+        email: true;
+        phone: true;
+        role: true;
+        departmentId: true;
+        createdAt: true;
+    };
+}>[]> {
+    const officers = await prisma.user.findMany({
+        where: {
+            departmentId: departmentId,
+            role: "officer",
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            role: true,
+            departmentId: true,
+            createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+    });
+    return officers;
+}
+
+/**
+ * Remove officer from department
+ */
+export async function removeOfficerFromDepartment(officerId: string): Promise<void> {
+    const user = await prisma.user.findUnique({
+        where: { id: officerId },
+    });
+
+    if (!user) {
+        throw new NotFoundError("User not found");
+    }
+
+    await prisma.user.update({
+        where: { id: officerId },
+        data: {
+            departmentId: null,
+        },
+    });
 }
