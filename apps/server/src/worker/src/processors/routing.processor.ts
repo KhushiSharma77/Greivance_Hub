@@ -1,44 +1,68 @@
-type RoutingResult = {
-  departmentName: string;
-  routingReason: string;
-  fallbackUsed: boolean;
-};
+import { Job } from 'bullmq';
+import prisma from '@team-call-of-code/db';
+import { routingEvents } from '../events/routing.events';
+import { routeGrievanceText } from '../services/routing.service';
 
+export async function routingProcessor(job: Job) {
+  const { grievanceId } = job.data;
 
-const CATEGORY_DEPARTMENT_MAP: Record<string, string> = {
-  "Roads & Infrastructure": "Public Works Department",
-  "Water Supply": "Water Supply Department",
-  "Electricity": "Electricity Board",
-  "Sanitation": "Municipal Sanitation Department",
-  "Public Safety": "Police Department",
-  "Healthcare": "Health Department",
-  "Education": "Education Department",
-  "Transport": "Transport Department",
-  "Municipal Services": "Municipal Corporation",
-  "Administrative Delay": "Administrative Grievance Cell",
-};
+  // 1️⃣ Fetch required grievance data
+  const grievance = await prisma.grievance.findUnique({
+    where: { id: grievanceId },
+    select: {
+      category: true,
+      latitude: true,
+      longitude: true,
+      translatedText: true,
+      originalText: true,
+    },
+  });
 
-
-export function routeGrievanceToDepartment(
-  category: string,
-  city: string
-): RoutingResult {
-
-  const departmentName = CATEGORY_DEPARTMENT_MAP[category];
-
-  // Fallback if category not mapped
-  if (!departmentName) {
-    return {
-      departmentName: "General Grievance Cell",
-      routingReason: `No direct mapping found for category "${category}"`,
-      fallbackUsed: true,
-    };
+  if (!grievance) {
+    throw new Error(`Grievance not found: ${grievanceId}`);
   }
 
-  // City is currently informational (future: city-based overrides)
+  const {
+    category,
+    latitude,
+    longitude,
+    translatedText,
+    originalText,
+  } = grievance;
+
+  // 2️⃣ Validate required fields
+  if (!category || latitude == null || longitude == null) {
+    throw new Error(
+      `Missing routing data for grievance ${grievanceId}`
+    );
+  }
+
+  // 3️⃣ Call Gemini routing service
+  const routingResult = await routeGrievanceText({
+    normalizedText: translatedText ?? originalText,
+    category,
+    latitude,
+    longitude,
+  });
+
+  // 4️⃣ Confidence guard (important)
+  if (routingResult.confidence < 0.6) {
+    throw new Error(
+      `Low routing confidence (${routingResult.confidence})`
+    );
+  }
+
+  // 5️⃣ Emit routing success event
+  await routingEvents.onRouted({
+    grievanceId,
+    departmentName: routingResult.department,
+    city: routingResult.city,
+  });
+
   return {
-    departmentName,
-    routingReason: `Category "${category}" is handled by ${departmentName}`,
-    fallbackUsed: false,
+    grievanceId,
+    department: routingResult.department,
+    city: routingResult.city,
+    confidence: routingResult.confidence,
   };
 }

@@ -1,9 +1,15 @@
-/**
- * Routing Queue
- * Handles grievance routing to departments
- */
+import { Queue, Worker } from 'bullmq';
+import { redisConnection } from '../utils/redis';
+import { routingProcessor } from '../processors/routing.processor';
 
-// TODO: Implement BullMQ queue for routing
-export const ROUTING_QUEUE_NAME = "grievance-routing";
+export const ROUTING_QUEUE_NAME = "grievance-routing";4
 
-// TODO: Create and export queue instance
+export const routingQueue = new Queue(ROUTING_QUEUE_NAME, {
+  connection: redisConnection,
+});
+
+export const routingWorker = new Worker(
+  ROUTING_QUEUE_NAME,
+  routingProcessor,
+  { connection: redisConnection, concurrency: 5 }
+);
