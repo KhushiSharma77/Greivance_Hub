@@ -73,7 +73,7 @@ export function Navbar() {
                         <ModeToggle />
                         {isLoggedIn ? (
                             <>
-                                <Link href={getDashboardLink()}>
+                                <Link href={getDashboardLink() as any}>
                                     <Button
                                         variant="ghost"
                                         className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-purple-700 dark:hover:text-purple-400"
@@ -103,7 +103,7 @@ export function Navbar() {
                                 </Link>
                                 <Link href="/signup">
                                     <Button className="shadow-lg shadow-purple-500/30 transition-all hover:shadow-purple-500/50">
-                                        Get Started
+                                        Sign Up
                                     </Button>
                                 </Link>
                             </>
@@ -157,7 +157,7 @@ export function Navbar() {
                             <div className="flex flex-col gap-3 border-t border-white/40 pt-4">
                                 {isLoggedIn ? (
                                     <>
-                                        <Link href={getDashboardLink()} onClick={() => setIsMenuOpen(false)}>
+                                        <Link href={getDashboardLink() as any} onClick={() => setIsMenuOpen(false)}>
                                             <Button variant="outline" className="w-full flex items-center gap-2">
                                                 <LayoutDashboard className="w-4 h-4" />
                                                 Dashboard
