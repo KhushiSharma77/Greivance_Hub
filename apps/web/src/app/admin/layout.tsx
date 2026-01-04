@@ -56,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             return (
                                 <Link
                                     key={item.href}
-                                    href={item.href}
+                                    href={item.href as any}
                                     className={`
                                         flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                                         ${isActive
@@ -94,6 +94,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     >
                         {isSidebarOpen ? <X /> : <Menu />}
                     </button>
+
+                    {/* Navbar Navigation */}
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 text-white hover:opacity-90 transition-all font-medium"
+                        >
+                            <LayoutDashboard className="w-4 h-4" />
+                            <span className="hidden sm:inline">Home</span>
+                        </Link>
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={handleLogout}
+                            className="flex items-center gap-2"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            <span className="hidden sm:inline">Logout</span>
+                        </Button>
+                    </div>
 
                     <div className="flex-1" />
 

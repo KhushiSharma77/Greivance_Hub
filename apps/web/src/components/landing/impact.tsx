@@ -68,9 +68,12 @@ export function Impact() {
                                     <Icon className="h-10 w-10 text-purple-700 dark:text-white" />
                                 </div>
 
-                                <div className="mb-3 bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-5xl font-bold text-transparent sm:text-6xl">
-                                    {stat.value}
+                                <div className="mb-3 inline-flex items-end text-5xl font-bold sm:text-6xl">
+                                    <span className="bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent tabular-nums">
+                                        {stat.value}
+                                    </span>
                                 </div>
+
 
                                 <div className="mb-2 text-lg font-semibold text-gray-900 dark:text-white sm:text-xl">
                                     {stat.label}

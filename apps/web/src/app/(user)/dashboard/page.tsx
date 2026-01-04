@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { 
-    Plus, 
-    Search, 
-    Filter, 
-    Eye, 
-    Pencil, 
-    Trash2, 
-    Clock, 
-    CheckCircle2, 
+import {
+    Plus,
+    Search,
+    Filter,
+    Eye,
+    Pencil,
+    Trash2,
+    Clock,
+    CheckCircle2,
     AlertCircle,
     TrendingUp,
     FileText,
@@ -99,33 +99,33 @@ export default function UserDashboard() {
     }
 
     const stats = [
-        { 
-            label: "Total Posted", 
-            value: grievances.length, 
-            icon: FileText, 
-            color: "text-blue-500", 
-            bg: "bg-blue-50 dark:bg-blue-950/30" 
+        {
+            label: "Total Posted",
+            value: grievances.length,
+            icon: FileText,
+            color: "text-blue-500",
+            bg: "bg-blue-50 dark:bg-blue-950/30"
         },
-        { 
-            label: "Pending", 
-            value: grievances.filter(g => g.status === "PENDING").length, 
-            icon: Clock, 
-            color: "text-orange-500", 
-            bg: "bg-orange-50 dark:bg-orange-950/30" 
+        {
+            label: "Pending",
+            value: grievances.filter(g => g.status === "PENDING").length,
+            icon: Clock,
+            color: "text-orange-500",
+            bg: "bg-orange-50 dark:bg-orange-950/30"
         },
-        { 
-            label: "In Progress", 
-            value: grievances.filter(g => g.status === "IN_PROGRESS").length, 
-            icon: TrendingUp, 
-            color: "text-purple-500", 
-            bg: "bg-purple-50 dark:bg-purple-950/30" 
+        {
+            label: "In Progress",
+            value: grievances.filter(g => g.status === "IN_PROGRESS").length,
+            icon: TrendingUp,
+            color: "text-purple-500",
+            bg: "bg-purple-50 dark:bg-purple-950/30"
         },
-        { 
-            label: "Resolved", 
-            value: grievances.filter(g => g.status === "RESOLVED").length, 
-            icon: CheckCircle2, 
-            color: "text-green-500", 
-            bg: "bg-green-50 dark:bg-green-950/30" 
+        {
+            label: "Resolved",
+            value: grievances.filter(g => g.status === "RESOLVED").length,
+            icon: CheckCircle2,
+            color: "text-green-500",
+            bg: "bg-green-50 dark:bg-green-950/30"
         }
     ]
 
@@ -152,7 +152,7 @@ export default function UserDashboard() {
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Citizen Dashboard</h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-1">Monitor and track your posted grievances in real-time.</p>
                 </div>
-                <Link href="/dashboard/new-grievance">
+                <Link href={"/dashboard/new-grievance" as any}>
                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-6 rounded-2xl shadow-lg shadow-primary/20 gap-2 transition-all hover:scale-105 active:scale-95">
                         <Plus className="w-5 h-5" />
                         <span>Raise New Grievance</span>
