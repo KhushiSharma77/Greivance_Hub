@@ -189,6 +189,129 @@ export const api = {
             if (error instanceof ApiError) throw error;
             throw new ApiError("Network error while updating grievance status");
         }
+    },
+
+    // Admin API methods
+    async createDepartment(payload: { name: string; code: string; city: string }) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/departments`, {
+                method: "POST",
+                headers: this.getAuthHeaders(),
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to create department", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while creating department");
+        }
+    },
+
+    async assignOfficerToDepartment(departmentId: string, officerId: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/departments/${departmentId}/assign-officer`, {
+                method: "POST",
+                headers: this.getAuthHeaders(),
+                body: JSON.stringify({ officerId }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to assign officer", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while assigning officer");
+        }
+    },
+
+    async getDepartmentOfficers(departmentId: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/departments/${departmentId}/officers`, {
+                method: "GET",
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch department officers", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching department officers");
+        }
+    },
+
+    async removeOfficerFromDepartment(departmentId: string, officerId: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/departments/${departmentId}/officers/${officerId}`, {
+                method: "DELETE",
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to remove officer", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while removing officer");
+        }
+    },
+
+    async getAllDepartments() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/departments`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch departments", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching departments");
+        }
+    },
+
+    async createUser(payload: { email: string; password: string; role: 'officer' | 'admin'; name: string }) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/users`, {
+                method: "POST",
+                headers: this.getAuthHeaders(),
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to create user", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while creating user");
+        }
+    },
+
+    async getAllUsers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/users`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch users", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching users");
+        }
+    },
+
+    async assignDepartmentToUser(userId: string, departmentId: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/users/${userId}/department`, {
+                method: "PATCH",
+                headers: this.getAuthHeaders(),
+                body: JSON.stringify({ departmentId }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to assign department", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while assigning department");
+        }
     }
 };
 

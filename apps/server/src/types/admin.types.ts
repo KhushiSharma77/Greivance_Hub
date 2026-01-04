@@ -3,10 +3,17 @@ import { z } from "zod";
 // ==================== Create Department ====================
 export const createDepartmentSchema = z.object({
     name: z.string().min(2, "Department name must be at least 2 characters"),
-    City: z.string().min(2, "City must be at least 2 characters"),
+    city: z.string().min(2, "City must be at least 2 characters"),
 });
 
 export type CreateDepartmentInput = z.infer<typeof createDepartmentSchema>;
+
+// ==================== Assign Officer ====================
+export const assignOfficerSchema = z.object({
+    officerId: z.string().uuid("Invalid officer ID"),
+});
+
+export type AssignOfficerInput = z.infer<typeof assignOfficerSchema>;
 
 // ==================== Create User (Officer) ====================
 export const createUserSchema = z.object({
@@ -42,7 +49,7 @@ export type UserIdParam = z.infer<typeof userIdSchema>;
 // ====================Service Interfaces ====================
 export interface CreateDepartmentData {
     name: string;
-    City: string;
+    city: string;
 }
 
 export interface CreateUserData {
