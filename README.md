@@ -26,7 +26,7 @@ An AI-driven grievance redressal platform using Natural Language Processing (NLP
 
 # 2-Minute Demonstration Video
 
-[🎥 *Coming Soon*](https://drive.google.com/file/d/1D2YkPoY8J9ueSICuXhOKzPyaPqWMTr_D/view?usp=sharing)
+[🎥 *video*](https://drive.google.com/file/d/1D2YkPoY8J9ueSICuXhOKzPyaPqWMTr_D/view?usp=sharing)
 
 ---
 
