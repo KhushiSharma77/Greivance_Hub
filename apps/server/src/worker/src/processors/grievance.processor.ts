@@ -1,51 +1,35 @@
-import { routeGrievanceToDepartment } from "./routing.processor";
+import { Job } from 'bullmq';
 
-import type { GrievanceDTO, PriorityLevel } from "@/types/grievance";
-import { createGrievance } from "../services/routing.service";
+import { duplicateQueue } from '../queues/duplicate.queue';
+import { grievanceEvents } from '../events/grievance.events';
+import { analyzeGrievanceText } from '../services/master.service';
 
-type GrievanceProcessorInput = {
-    userId: string;
-    originalText: string;
-    translatedText: string;
-    category: string;
-    priority: PriorityLevel;
-    city: string;
-    latitude?: number;
-    longitude?: number;
-};
+export async function grievanceProcessor(job: Job) {
+  const { grievanceId, text } = job.data;
 
-export async function processGrievance(
-    input: GrievanceProcessorInput
-): Promise<GrievanceDTO> {
-    const {
-        userId,
-        originalText,
-        translatedText,
-        category,
-        priority,
-        city,
-        latitude,
-        longitude,
-    } = input;
+  try {
+    // 1️⃣ Category, priority, sentiment
+    const analysis = await analyzeGrievanceText(text)
 
-    // 1️⃣ Route grievance → department
-    const routingResult = routeGrievanceToDepartment(category, city);
-
-    const { departmentName } = routingResult;
-
-    // 2️⃣ Persist grievance
-    const grievance = await createGrievance({
-        departmentName,
-        grievance: {
-            userId,
-            originalText,
-            translatedText,
-            category,
-            priority,
-            latitude,
-            longitude,
-        },
+    await grievanceEvents.onProcessed({
+      grievanceId,
+      analysis,
     });
 
-    return grievance;
+    // 2️⃣ 🔥 CHAIN → DUPLICATE
+    await duplicateQueue.add(
+      'duplicate-detection',
+      {
+        grievanceId,
+        text,
+        category: analysis.category,
+      },
+      { attempts: 3 }
+    );
+
+    return { grievanceId };
+  } catch (err) {
+    await grievanceEvents.onFailed(grievanceId, err as Error);
+    throw err;
+  }
 }

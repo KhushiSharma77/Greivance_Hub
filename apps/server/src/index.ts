@@ -1,3 +1,4 @@
+import prisma from "@team-call-of-code/db";
 import { env } from "@team-call-of-code/env/server";
 import cors from "cors";
 import express from "express";
@@ -14,9 +15,7 @@ app.use(
 
 app.use(express.json());
 
-app.use("/api/grievance",grievanceRoutes );
-
-app.get("/", (_req, res) => {
+app.get("/", async (_req, res) => {
   res.status(200).send("OK");
 });
 

@@ -1,7 +1,7 @@
 import { geminiModel } from "./gemini.service";
 import { DUPLICATE_DETECTION_PROMPT } from "../prompts/duplicate.prompts";
 import { extractJsonFromText } from "../utils/extractJson";
-import type { ExistingComplaint } from "@/types/duplicatesIssue";
+import type { ExistingComplaint } from "@/worker/src/types/duplicatesIssue";
 
 
 
