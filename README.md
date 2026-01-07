@@ -125,7 +125,7 @@ graph TD
 
 - Node.js 20+ or Bun runtime
 - PostgreSQL 15+
-- Redis (for queue management)
+- Redis (local reids setup) (for queue management)
 - Supabase account (for storage)
 - Google Gemini API key
 
@@ -154,12 +154,14 @@ graph TD
    GEMINI_API_KEY="your-gemini-api-key"
    SUPABASE_URL="your-supabase-url"
    PORT=3000
+   SUPABASE_SERVICE_ROLE_KEY=""
+   NODE_ENV='development'
+   CORS_ORIGIN='http://localhost:3001'
    ```
 
    **`apps/web/.env.local`**
    ```env
    NEXT_PUBLIC_API_URL="http://localhost:3000"
-   API_BASE_URL="http://localhost:3001"
    ```
 
 4. **Set up the database**
