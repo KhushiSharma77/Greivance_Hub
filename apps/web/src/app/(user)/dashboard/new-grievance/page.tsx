@@ -162,8 +162,8 @@ export default function NewGrievancePage() {
             // Construct the data object with numerical coordinates
             const data = {
                 originalText,
-                latitude: location?.lat || 0,
-                longitude: location?.lng || 0,
+                latitude:18.47,
+                longitude: 73.80,
                 category: "General" // Default category for now
             };
 

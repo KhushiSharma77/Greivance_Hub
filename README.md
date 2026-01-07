@@ -12,92 +12,76 @@ There is a pressing need for an **AI-powered grievance redressal system** that c
 
 ---
 
-# GrievanceHUB
+# GrievanceHUB 
 
-An AI-driven grievance redressal platform using Natural Language Processing (NLP) and intelligent automation to automatically analyze, classify, prioritize, and route citizen complaints to appropriate departments.
 
----
+**AI-Powered Public Governance & Grievance Redressal**
 
-# Team Name
-
-**CallOfCode**
+GrievanceHUB is an intelligent automation platform designed to bridge the gap between citizens and public governance. By leveraging LLMs (Google Gemini) and an event-driven architecture, we transform unstructured citizen complaints into actionable, prioritized, and routed tasks for government officials.
 
 ---
 
-# 2-Minute Demonstration Video
+## The Workflow: Lifecycle of a Grievance
 
-[🎥 *video*](https://drive.google.com/file/d/1D2YkPoY8J9ueSICuXhOKzPyaPqWMTr_D/view?usp=sharing)
+Understanding how a complaint moves from a citizen's phone to an officer's dashboard is core to GrievanceHUB.
 
----
+### 1. Submission Phase (Citizen)
 
-# PPT Link
+- **Input**: Citizens submit grievances via text, voice notes, or images.
+- **Multilingual Processing**: The system accepts input in regional languages.
+- **Immediate Feedback**: Users receive a tracking ID and an initial "Processing" status.
 
-📊 [PPT](https://drive.google.com/file/d/1-NxC65gvIRDQNBoWMKHW2jdRmZmQ4YWY/view?usp=sharing)
+### 2. Intelligent Processing Phase (AI Engine)
 
----
+Once submitted, the grievance enters a high-speed asynchronous pipeline powered by **BullMQ** and **Google Gemini**:
 
-## 📋 Project Overview
+- **Translation & Normalization**: Non-English text is translated; slang or "noisy" text is cleaned for analysis.
+- **Categorization**: AI identifies the department (e.g., Sanitation, Road Works, Utilities).
+- **Entity Extraction**: Automatically pulls locations, dates, and specific landmarks from the text.
+- **Priority Scoring**:
+  - **Severity**: High-risk issues (e.g., "Live wire on street") are flagged immediately.
+  - **Sentiment**: Distress levels are measured to identify urgent citizen needs.
+  - **Impact**: Detects if the issue affects a single person or a whole community.
 
-**GrievanceHUB** is a comprehensive grievance management platform designed to revolutionize how citizens in India report and track grievances with government departments and public sector services. The platform combines intelligent AI-powered analysis with a user-friendly interface to create a transparent, efficient, and accountable grievance redressal system.
+### 3. Routing & Assignment Phase (System)
 
-### Key Objectives
+- **Smart Routing**: Based on the category, the grievance is pushed to the specific **Officer Dashboard** for that department.
+- **Duplicate Detection**: The system checks for similar complaints in the same location to group them, preventing redundant work.
 
-- **Automatically analyze and classify** citizen complaints using NLP
-- **Prioritize grievances** based on urgency, severity, and impact
-- **Route complaints** to the appropriate department or authority
-- **Assist government bodies** in resolving issues efficiently and transparently
+### 4. Resolution & Accountability Phase (Officer/Admin)
 
-### Core Capabilities
+- **Officer Action**: Officers view their queue ordered by AI-priority. They can update status (In-Progress, Resolved, Rejected).
+- **Explainable AI**: Officers can see *why* a grievance was marked high priority (e.g., "High distress detected + potential public safety hazard").
+- **Citizen Tracking**: Citizens receive real-time updates as the status changes.
 
-#### 🧑‍💼 For Citizens
-- **Simple Grievance Submission**: Submit complaints through free-text input with optional image or voice attachments
-- **Multilingual Support**: Automatic language translation for regional languages
-- **Real-time Tracking**: Monitor the status and progress of your grievances
-- **Unified Interface**: Single platform for all types of grievances
+## AI Engine Deep-Dive
 
-#### 👨‍💼 For Officers
-- **Role-based Dashboards**: Access department-specific grievances and analytics
-- **Priority Insights**: View grievance inflow, priority distribution, and severity scores
-- **Explainable AI**: Understand AI-driven prioritization decisions
-- **Efficient Management**: Streamlined workflow for grievance resolution
+We use **Google Gemini-2.5-Flash** as our primary reasoning engine. Unlike simple keyword matching, our NLP pipeline performs complex cognitive tasks:
 
-#### 👑 For Admins
-- **Department Management**: Create and manage multiple departments
-- **Officer Assignment**: Assign officers to specific departments
-- **System Analytics**: Comprehensive insights across all departments
-- **Authorization Control**: Manage user roles and permissions
+| **Feature**           | **Logic**                                                    |
+| --------------------- | ------------------------------------------------------------ |
+| **Semantic Routing**  | Maps "The drain is overflowing" to *Sanitation* and "Street lights are off" to *Electricity*. |
+| **Urgency Detection** | Differentiates between a "Planned outage" (Medium) and "Explosion in transformer" (Critical). |
+| **Summarization**     | Converts long, rambling complaints into 1-sentence "Subject Lines" for quick officer review. |
+| **Distress Analysis** | Uses sentiment analysis to prioritize citizens who are in immediate danger or extreme frustration. |
 
----
+## Technical Architecture
 
-## 🤖 AI-Powered Features
-
-### Intelligent Grievance Understanding (NLP Engine)
-
-The system leverages Google's Gemini API for advanced NLP capabilities:
-
-- **Text Normalization**: Cleans and normalizes noisy user input
-- **Language Detection**: Automatically detects and translates regional languages
-- **Smart Classification**: Categorizes grievances (water, roads, healthcare, etc.)
-- **Entity Extraction**: Identifies key details such as location and duration
-- **Sentiment Analysis**: Detects distress and urgency indicators
-
-### Priority Scoring System
-
-Each grievance receives an intelligent priority score based on:
-
-- **Duration of Issue**: How long the problem has persisted
-- **Affected Citizens**: Number of people impacted (duplicate detection)
-- **Distress Indicators**: Sentiment analysis and urgency signals
-
-### Event-Driven Architecture
-
-- **Asynchronous Processing**: BullMQ + Redis for scalable background jobs
-- **Independent Workers**: Separate workers for NLP analysis, duplicate detection, and routing
-- **Fault Tolerance**: Built-in retry mechanisms and failure isolation
+```mermaid
+graph TD
+    A[Citizen UI - Next.js] -->|Submit| B[Express API]
+    B -->|Store Raw Data| C[(PostgreSQL)]
+    B -->|Add to Queue| D[Redis / BullMQ]
+    D -->|Worker Process| E[Gemini AI Engine]
+    E -->|Analyze & Score| D
+    D -->|Update Result| C
+    C -->|Push Update| F[Officer Dashboard]
+    C -->|Push Update| A
+```
 
 ---
 
-## 🛠️ Technical Stack
+## Technical Stack
 
 ### Frontend (`apps/web`)
 - **Framework**: Next.js 15+ (App Router)
@@ -126,16 +110,16 @@ Each grievance receives an intelligent priority score based on:
 
 ---
 
-🌐 Landing Page
+ Landing Page
 <p align="center"> <img src="Screenshots/screenshot-2026-01-04_13-30-39.png" width="800" /> </p>
-👤 Citizen Dashboard
+ Citizen Dashboard
 <p align="center"> <img src="Screenshots/screenshot-2026-01-04_13-31-29.png" width="400" /> <img src="Screenshots/screenshot-2026-01-04_13-31-46.png" width="400" /> </p>
-🧑‍💼 Officer Dashboard
-<p align="center"> <img src="Screenshots/screenshot-2026-01-04_13-32-11.png" width="800" /> </p>
-🛠️ Admin Dashboard
+ Officer Dashboard
+<p align="center"> <img src="Screenshots/officer.png" width="400" /> <img src="Screenshots/officer1.png" width="400" /> </p>
+ <b>Admin Dashboard</b>
 <p align="center"> <img src="Screenshots/screenshot-2026-01-04_13-34-06.png" width="400" /> <img src="Screenshots/screenshot-2026-01-04_13-34-17.png" width="400" /> </p>
 
-## 🚀 Setup and Installation
+## Setup and Installation
 
 ### Prerequisites
 
@@ -200,37 +184,7 @@ Each grievance receives an intelligent priority score based on:
 
 ---
 
-## 💡 Usage Instructions
-
-### For Citizens
-
-1. **Sign Up/Login**: Create an account or log in with existing credentials
-2. **Submit Grievance**: 
-   - Fill out the grievance form with details
-   - Optionally attach images or voice notes or video-recordings
-   - Submit the complaint
-3. **Track Status**: Monitor your grievance progress in real-time
-4. **View Updates**: Receive notifications on status changes
-
-### For Officers
-
-1. **Login**: Access the officer dashboard with your credentials
-2. **View Assigned Grievances**: See all grievances assigned to your department
-3. **Review Priority**: Check AI-generated priority scores and classifications
-4. **Take Action**: Update grievance status and add resolution notes
-5. **Analytics**: View department performance metrics
-
-### For Admins
-
-1. **Login**: Access the admin panel
-2. **Manage Departments**: Create new departments and configure settings
-3. **Assign Officers**: Add officers and assign them to specific departments
-4. **Monitor System**: View system-wide analytics and insights
-5. **User Management**: Manage user roles and permissions
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 GFGBQ-Team-call-of-code/
@@ -268,6 +222,16 @@ GFGBQ-Team-call-of-code/
 ├── packages/
 │   ├── api/         # API layer / business logic
 ```
+
+## 👥 The Team: CallOfCode
+
+| **Name**          | **Profile**                                                  |
+| ----------------- | ------------------------------------------------------------ |
+| **Harish Narote** | [@Harish-Naruto](https://github.com/Harish-Naruto) |
+| **Samarth Lad**      | [@samrth07](https://github.com/samrth07) |
+| **Sherin Thomas**   | [@Sherin-2711](https://github.com/Sherin-2711) |
+| **shruti Jadhav**   | [@shrutiiiyet](https://github.com/shrutiiiyet) |
+
 
 ## Available Scripts
 
