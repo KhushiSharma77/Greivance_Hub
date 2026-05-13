@@ -40,7 +40,7 @@
   "devDependencies": {
     "@team-call-of-code/config": "workspace:*",
     "@types/bun": "catalog:",
-    "prisma": "5.22.0",
+    "prisma": "7.1.0",
     "turbo": "^2.6.3",
     "typescript": "catalog:"
   },
