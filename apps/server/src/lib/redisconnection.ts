@@ -1,5 +1,12 @@
 import { Redis } from 'ioredis';
 
+console.log('[REDIS] Checking environment...');
+if (process.env.REDIS_URL) {
+  console.log('[REDIS] Found REDIS_URL in environment');
+} else {
+  console.log('[REDIS] REDIS_URL is MISSING in environment. Falling back to localhost.');
+}
+
 export const redis = process.env.REDIS_URL
   ? new Redis(process.env.REDIS_URL, { maxRetriesPerRequest: null })
   : new Redis({
