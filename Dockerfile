@@ -10,6 +10,9 @@ COPY . .
 # Install dependencies
 RUN bun install
 
+# Generate Prisma Client
+RUN bun run db:generate
+
 # Build the project
 RUN bun run build
 
