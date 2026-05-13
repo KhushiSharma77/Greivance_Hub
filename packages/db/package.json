@@ -15,16 +15,16 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio"
   },
-  "devDependencies": {
-    "prisma": "^7.1.0",
-    "typescript": "catalog:",
-    "@team-call-of-code/config": "workspace:*"
-  },
   "dependencies": {
+    "prisma": "^7.1.0",
     "@prisma/client": "catalog:",
     "@prisma/adapter-pg": "^7.1.0",
     "dotenv": "catalog:",
     "zod": "catalog:",
     "@team-call-of-code/env": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@team-call-of-code/config": "workspace:*"
   }
 }

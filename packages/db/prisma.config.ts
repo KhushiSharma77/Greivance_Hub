@@ -2,11 +2,11 @@ import path from "node:path";
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({
-  schema: path.join("prisma", "schema"),
+  schema: "./prisma/schema",
   migrations: {
-    path: path.join("prisma", "migrations"),
+    path: "./prisma/migrations",
   },
   datasource: {
-    url: process.env.DATABASE_URL || "postgresql://dummy:dummy@localhost:5432/dummy",
+    url: process.env.DATABASE_URL,
   },
 });
