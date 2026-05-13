@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { env } from "@team-call-of-code/env/server";
 import cors from "cors";
 import express from "express";
@@ -5,7 +6,6 @@ import { createClient } from "@supabase/supabase-js";
 import routes from "./routes/v1";
 import multer from "multer";
 import { errorHandler } from "./lib/error-handler";
-import "dotenv/config";
 
 // Initialize BullMQ background AI workers
 import "./worker/src/index";
