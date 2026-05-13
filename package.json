@@ -28,17 +28,21 @@
     "db:migrate": "turbo -F @team-call-of-code/db db:migrate"
   },
   "dependencies": {
+    "@prisma/client": "^7.8.0",
     "@supabase/supabase-js": "^2.89.0",
     "@team-call-of-code/env": "workspace:*",
+    "@types/nodemailer": "^8.0.0",
     "dotenv": "catalog:",
+    "nodemailer": "^8.0.7",
     "uuid": "^13.0.0",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "turbo": "^2.6.3",
-    "typescript": "catalog:",
+    "@team-call-of-code/config": "workspace:*",
     "@types/bun": "catalog:",
-    "@team-call-of-code/config": "workspace:*"
+    "prisma": "5.22.0",
+    "turbo": "^2.6.3",
+    "typescript": "catalog:"
   },
   "packageManager": "bun@1.2.21"
 }

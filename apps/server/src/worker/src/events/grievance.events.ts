@@ -1,5 +1,6 @@
 import prisma from '@team-call-of-code/db';
 import type { GrievanceProcessedEvent } from '../types/events.types';
+import { sendStatusUpdateEmail } from '../../../services/email.service';
 
 export const grievanceEvents = {
   async onProcessed(event: GrievanceProcessedEvent) {
@@ -36,6 +37,25 @@ export const grievanceEvents = {
         },
       });
     });
+
+    // Send status update email to the citizen
+    try {
+      const grievance = await prisma.grievance.findUnique({
+        where: { id: grievanceId },
+        include: { user: { select: { email: true } }, department: { select: { name: true } } },
+      });
+      if (grievance?.user?.email) {
+        await sendStatusUpdateEmail(grievance.user.email, {
+          grievanceId,
+          originalText: grievance.originalText,
+          oldStatus: "PENDING",
+          newStatus: "ANALYZED",
+          departmentName: grievance.department?.name,
+        });
+      }
+    } catch (e) {
+      console.error("[EMAIL] Failed to send status update:", e);
+    }
   },
 
   async onFailed(grievanceId: string, error: Error) {

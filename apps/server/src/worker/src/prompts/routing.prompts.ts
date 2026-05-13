@@ -18,17 +18,14 @@ IMPORTANT RULES:
 - Do NOT invent new departments.
 - Output must be machine-readable JSON only.
 
-CATEGORY → DEPARTMENT MAPPING:
-- Roads & Infrastructure → Public Works Department
-- Water Supply → Water Supply Department
-- Electricity → Electricity Board
-- Sanitation → Municipal Sanitation Department
-- Public Safety → Police Department
-- Healthcare → Health Department
-- Education → Education Department
-- Transport → Transport Department
-- Municipal Services → Municipal Corporation
-- Administrative Delay → Administrative Grievance Cell
+CATEGORY → DEPARTMENT MAPPING (INDIAN CIVIC DEPARTMENTS ONLY):
+- Roads & Infrastructure → Public Works Department (PWD)
+- Water Supply & Sanitation → Water Supply & Sewerage Board
+- Electricity & Power → State Electricity Board
+- Garbage & Waste → Municipal Corporation (Solid Waste)
+- Traffic & Vehicles → Traffic Police / RTO
+- Pollution & Environment → Environment & Forest Department
+- General / Other → General Administration
 
 INPUT DATA:
 Complaint:

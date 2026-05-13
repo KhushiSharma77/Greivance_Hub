@@ -99,6 +99,7 @@ export default function LoginPage() {
                     // Store token
                     localStorage.setItem("auth_token", response.data.token)
                     localStorage.setItem("user_role", response.data.user.role)
+                    localStorage.setItem("user_data", JSON.stringify(response.data.user))
 
                     // Redirect based on role
                     window.location.href = role === "user" ? "/dashboard" : role === "officer" ? "/officer" : "/admin"
@@ -214,7 +215,7 @@ export default function LoginPage() {
                     <div className="mt-6 text-center">
                         <p className="text-sm text-muted-foreground">
                             Don't have an account?{" "}
-                            <a href="/register" className="font-medium text-primary hover:underline">
+                            <a href="/signup" className="font-medium text-primary hover:underline">
                                 Register here
                             </a>
                         </p>

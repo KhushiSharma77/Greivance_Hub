@@ -17,13 +17,25 @@ import { Button } from "@/components/ui/button"
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const [userName, setUserName] = useState("Citizen")
     const pathname = usePathname()
+
+    useEffect(() => {
+        // Load user name from localStorage
+        try {
+            const userData = localStorage.getItem("user_data")
+            if (userData) {
+                const parsed = JSON.parse(userData)
+                setUserName(parsed.name || "Citizen")
+            }
+        } catch {}
+    }, [])
 
     const navItems = [
         { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" as const },
         { icon: MessageSquare, label: "My Grievances", href: "/dashboard/grievances" as const },
-        { icon: Bell, label: "Notifications", href: "/dashboard/notifications" as const },
-        { icon: Settings, label: "Settings", href: "/dashboard/settings" as const },
+        { icon: Bell, label: "Community Feed", href: "/feed" as const },
+        { icon: UserIcon, label: "Profile", href: "/dashboard/profile" as const },
     ]
 
     const handleLogout = () => {
@@ -126,8 +138,8 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                         <div className="w-px h-6 bg-slate-200 dark:border-slate-800 mx-2" />
                         <div className="flex items-center gap-3">
                             <div className="text-right hidden sm:block">
-                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Citizen User</p>
-                                <p className="text-xs text-slate-500">ID: #40129</p>
+                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{userName}</p>
+                                <p className="text-xs text-slate-500">Citizen</p>
                             </div>
                             <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full">
                                 <UserIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />

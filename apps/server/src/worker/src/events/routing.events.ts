@@ -13,7 +13,7 @@ export const routingEvents = {
     });
 
     // 1️⃣ Resolve department ID safely
-    const department = await prisma.department.findFirst({
+    let department = await prisma.department.findFirst({
       where: {
         name: departmentName,
         City: city,
@@ -23,10 +23,17 @@ export const routingEvents = {
       },
     });
 
+    // Auto-create standard department for this city if it doesn't exist
     if (!department) {
-      throw new Error(
-        `No department found for ${departmentName} in ${city}`
-      );
+      department = await prisma.department.create({
+        data: {
+          name: departmentName,
+          City: city,
+        },
+        select: {
+          id: true,
+        },
+      });
     }
 
     await prisma.$transaction(async (tx) => {

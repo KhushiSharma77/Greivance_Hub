@@ -53,9 +53,16 @@ model User {
   departmentId  String?
   department    Department? @relation(fields: [departmentId], references: [id])
 
+  profilePicture String?
+  address        String?
+  aadhaarNumber  String?
+
   grievances    Grievance[] @relation("CitizenGrievances")
   assignedJobs  Grievance[] @relation("OfficerAssignments")
+  upvotes       Upvote[]
+  comments      Comment[]
 
+  isVerified    Boolean     @default(false)
   createdAt     DateTime    @default(now())
 }
 
@@ -96,10 +103,36 @@ model Grievance {
   latitude          Float?
   longitude         Float?
 
+  isPublic          Boolean           @default(true)
+  upvotes           Upvote[]
+  comments          Comment[]
+
   aiMetadata        GrievanceAIMetadata?
 
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+}
+
+model Upvote {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grievanceId String
+  grievance   Grievance @relation(fields: [grievanceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([userId, grievanceId]) // A user can only upvote a grievance once
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  content     String
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grievanceId String
+  grievance   Grievance @relation(fields: [grievanceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 

@@ -5,6 +5,7 @@ import { type Multer } from 'multer'
 import { SupabaseClient } from '@supabase/supabase-js'
 import citizenRouter from "./citizen.routes";
 import officerRouter from "./officer.routes";
+import publicRouter from "./public.routes";
 
 export default function routes(upload: Multer, supabase: SupabaseClient) {
   const router: Router = Router();
@@ -13,6 +14,7 @@ export default function routes(upload: Multer, supabase: SupabaseClient) {
   router.use('/auth', authRouter);
   router.use('/citizen', citizenRouter(upload, supabase));
   router.use('/officer', officerRouter);
+  router.use('/feed', publicRouter());
 
   return router;
 }

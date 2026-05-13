@@ -12,7 +12,9 @@ import {
     TrendingUp,
     FileText,
     MapPin,
-    Shield
+    Shield,
+    ThumbsUp,
+    MessageSquare
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -29,6 +31,10 @@ interface Grievance {
     priority: "LOW" | "MEDIUM" | "HIGH";
     latitude?: number;
     longitude?: number;
+    _count?: {
+        upvotes: number;
+        comments: number;
+    };
 }
 
 export default function OfficerDashboard() {
@@ -213,6 +219,18 @@ export default function OfficerDashboard() {
                                                         <MapPin className="w-4 h-4" />
                                                         {grievance.latitude}, {grievance.longitude}
                                                     </span>
+                                                    {grievance._count && (
+                                                        <>
+                                                            <span className="flex items-center gap-1 ml-2 text-blue-500 font-medium">
+                                                                <ThumbsUp className="w-4 h-4" />
+                                                                {grievance._count.upvotes}
+                                                            </span>
+                                                            <span className="flex items-center gap-1 text-slate-500">
+                                                                <MessageSquare className="w-4 h-4" />
+                                                                {grievance._count.comments}
+                                                            </span>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className="md:opacity-0 group-hover:opacity-100 transition-opacity">

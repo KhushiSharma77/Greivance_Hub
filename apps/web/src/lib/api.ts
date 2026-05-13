@@ -312,6 +312,85 @@ export const api = {
             if (error instanceof ApiError) throw error;
             throw new ApiError("Network error while assigning department");
         }
-    }
+    },
+
+    // Profile API methods
+    async getProfile() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/citizen/profile`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch profile", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching profile");
+        }
+    },
+
+    async updateProfile(payload: { name?: string; phone?: string; address?: string; aadhaarNumber?: string }) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/citizen/profile`, {
+                method: "PATCH",
+                headers: this.getAuthHeaders(),
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to update profile", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while updating profile");
+        }
+    },
+
+    async uploadProfilePicture(file: File) {
+        try {
+            const formData = new FormData();
+            formData.append("photo", file);
+            const response = await fetch(`${API_BASE_URL}/api/v1/citizen/profile/picture`, {
+                method: "POST",
+                headers: this.getAuthHeaders(true),
+                body: formData,
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to upload picture", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while uploading picture");
+        }
+    },
+
+    // Social Feed API methods
+    async getFeed() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/feed`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch feed", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching feed");
+        }
+    },
+
+    async toggleUpvote(id: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/feed/${id}/upvote`, {
+                method: "POST",
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to toggle upvote", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while toggling upvote");
+        }
+    },
 };
 

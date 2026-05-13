@@ -7,6 +7,9 @@ import multer from "multer";
 import { errorHandler } from "./lib/error-handler";
 import "dotenv/config";
 
+// Initialize BullMQ background AI workers
+import "./worker/src/index";
+
 export const supabase = createClient(
   env.SUPABASE_URL,
   env.SUPABASE_SERVICE_ROLE_KEY,
@@ -39,6 +42,8 @@ app.use("/api/v1", routes(upload, supabase));
 // Error handler must be last
 app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log("Server is running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

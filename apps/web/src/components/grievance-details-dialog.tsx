@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
     Dialog,
     DialogContent,
@@ -75,6 +75,29 @@ export function GrievanceDetailsDialog({
     onOpenChange,
 }: GrievanceDetailsDialogProps) {
     const [imageOpen, setImageOpen] = useState(false)
+    const [address, setAddress] = useState<string | null>(null)
+    const [isLoadingAddress, setIsLoadingAddress] = useState(false)
+
+    useEffect(() => {
+        if (grievance?.latitude && grievance?.longitude && open) {
+            setIsLoadingAddress(true)
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${grievance.latitude}&lon=${grievance.longitude}`, {
+                headers: {
+                    'User-Agent': 'GrievanceHub/1.0'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.display_name) {
+                    setAddress(data.display_name)
+                }
+            })
+            .catch(err => console.error("Error fetching address:", err))
+            .finally(() => setIsLoadingAddress(false))
+        } else if (!open) {
+            setAddress(null)
+        }
+    }, [grievance?.latitude, grievance?.longitude, open])
 
     if (!grievance) return null
 
@@ -154,6 +177,7 @@ export function GrievanceDetailsDialog({
                                         src={grievance.imageUrl}
                                         alt="Grievance"
                                         fill
+                                        unoptimized
                                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -236,13 +260,22 @@ export function GrievanceDetailsDialog({
 
                         {/* Location */}
                         {(grievance.latitude && grievance.longitude) && (
-                            <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
-                                <div className="flex items-center gap-2 text-slate-500 mb-2">
+                            <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl space-y-4">
+                                <div className="flex items-center gap-2 text-slate-500">
                                     <MapPin className="w-4 h-4" />
                                     <span className="text-sm font-medium">Location</span>
                                 </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">
-                                    Lat: {grievance.latitude.toFixed(6)}, Long: {grievance.longitude.toFixed(6)}
+                                <div className="w-full h-[200px] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+                                    <iframe 
+                                        width="100%" 
+                                        height="100%" 
+                                        frameBorder="0" 
+                                        scrolling="no" 
+                                        src={`https://www.openstreetmap.org/export/embed.html?bbox=${grievance.longitude-0.005},${grievance.latitude-0.005},${grievance.longitude+0.005},${grievance.latitude+0.005}&layer=mapnik&marker=${grievance.latitude},${grievance.longitude}`}
+                                    ></iframe>
+                                </div>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                                    {isLoadingAddress ? "Loading full address..." : address ? address : `Lat: ${grievance.latitude.toFixed(6)}, Long: ${grievance.longitude.toFixed(6)}`}
                                 </p>
                             </div>
                         )}
@@ -291,6 +324,7 @@ export function GrievanceDetailsDialog({
                             src={grievance.imageUrl}
                             alt="Grievance Full View"
                             fill
+                            unoptimized
                             className="object-contain"
                         />
                     </div>

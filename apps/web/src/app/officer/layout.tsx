@@ -17,7 +17,15 @@ import { Button } from "@/components/ui/button"
 
 export default function OfficerLayout({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const [user, setUser] = useState<{ name: string; role: string; department?: { name: string } } | null>(null)
     const pathname = usePathname()
+
+    useEffect(() => {
+        const userData = localStorage.getItem("user_data")
+        if (userData) {
+            setUser(JSON.parse(userData))
+        }
+    }, [])
 
     const navItems = [
         { icon: LayoutDashboard, label: "Dashboard", href: "/officer" as const },
@@ -29,6 +37,7 @@ export default function OfficerLayout({ children }: { children: React.ReactNode 
     const handleLogout = () => {
         localStorage.removeItem("auth_token")
         localStorage.removeItem("user_role")
+        localStorage.removeItem("user_data")
         window.location.href = "/login"
     }
 
@@ -126,8 +135,12 @@ export default function OfficerLayout({ children }: { children: React.ReactNode 
                         <div className="w-px h-6 bg-slate-200 dark:border-slate-800 mx-2" />
                         <div className="flex items-center gap-3">
                             <div className="text-right hidden sm:block">
-                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Officer</p>
-                                <p className="text-xs text-slate-500">Department Officer</p>
+                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                                    {user?.name || "Officer"}
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                    {user?.department?.name ? `${user.department.name} Officer` : "Department Officer"}
+                                </p>
                             </div>
                             <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full">
                                 <UserIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />

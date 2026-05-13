@@ -24,6 +24,9 @@ interface UserResponse {
     phone: string | null;
     role: string;
     departmentId: string | null;
+    department?: {
+        name: string;
+    } | null;
 }
 
 interface AuthResponse {
@@ -74,7 +77,23 @@ export async function signupCitizen(
     });
 
     if (existingUser) {
-        throw new ValidationError("User with this email or phone already exists");
+        // If already verified, block re-registration
+        if (existingUser.isVerified) {
+            throw new ValidationError("User with this email or phone already exists");
+        }
+
+        // If unverified, update their data (allow re-signup attempt)
+        const hashedPassword = await hashPassword(data.password);
+        await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+                name: data.name,
+                password: hashedPassword,
+                email: data.email || null,
+                phone: data.phone || null,
+            },
+        });
+        return;
     }
 
     // Hash password
@@ -112,6 +131,9 @@ export async function login(data: LoginData): Promise<AuthResponse> {
                 { phone: data.phone || undefined },
             ],
         },
+        include: {
+            department: true
+        }
     });
 
     if (!user) {
@@ -135,7 +157,18 @@ export async function login(data: LoginData): Promise<AuthResponse> {
             phone: user.phone,
             role: user.role,
             departmentId: user.departmentId,
+            department: user.department ? { name: user.department.name } : null,
         },
         token,
     };
 }
+
+/**
+ * Mark a user as verified after OTP confirmation
+ */
+export async function markUserVerified(email: string): Promise<void> {
+    await prisma.user.updateMany({
+        where: { email },
+        data: { isVerified: true },
+    });
+}

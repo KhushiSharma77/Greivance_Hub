@@ -1,5 +1,6 @@
 import prisma, { Prisma, GrievanceStatus } from "@team-call-of-code/db";
 import { NotFoundError } from "../lib/error-handler";
+import * as emailService from "./email.service";
 
 /**
  * Get all grievances for officer panel (filtered by officer's department)
@@ -20,6 +21,12 @@ export async function getAllGrievancesByDepartment(departmentId: string): Promis
                 id: true;
                 name: true;
                 email: true;
+            };
+        };
+        _count: {
+            select: {
+                upvotes: true;
+                comments: true;
             };
         };
     };
@@ -45,6 +52,12 @@ export async function getAllGrievancesByDepartment(departmentId: string): Promis
                     email: true,
                 },
             },
+            _count: {
+                select: {
+                    upvotes: true,
+                    comments: true
+                }
+            }
         },
         orderBy: { createdAt: "desc" },
     });
@@ -75,6 +88,12 @@ export async function updateGrievanceStatus(
                 id: true;
                 name: true;
                 email: true;
+            };
+        };
+        _count: {
+            select: {
+                upvotes: true;
+                comments: true;
             };
         };
     };
@@ -112,8 +131,25 @@ export async function updateGrievanceStatus(
                     email: true,
                 },
             },
+            _count: {
+                select: {
+                    upvotes: true,
+                    comments: true
+                }
+            }
         },
     });
+
+    // Send email notification to citizen
+    if (grievance.user.email) {
+        emailService.sendStatusUpdateEmail(grievance.user.email, {
+            grievanceId: grievance.id,
+            originalText: grievance.originalText,
+            oldStatus: existingGrievance.status,
+            newStatus: status,
+            departmentName: grievance.department?.name,
+        }).catch(err => console.error("[EMAIL] Failed to send status update email:", err));
+    }
 
     return grievance;
 }

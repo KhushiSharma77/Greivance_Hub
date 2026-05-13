@@ -159,11 +159,10 @@ export default function NewGrievancePage() {
         try {
             const formData = new FormData();
 
-            // Construct the data object with numerical coordinates
             const data = {
                 originalText,
-                latitude:18.47,
-                longitude: 73.80,
+                latitude: location?.lat ?? null,
+                longitude: location?.lng ?? null,
                 category: "General" // Default category for now
             };
 

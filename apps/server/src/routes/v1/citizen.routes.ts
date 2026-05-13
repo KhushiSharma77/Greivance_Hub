@@ -8,10 +8,14 @@ import {
     grievanceIdSchema,
 } from "../../types/grievance.types";
 import * as grievanceService from "../../services/grievance.service";
+import * as profileService from "../../services/profile.service";
 import { type Multer } from 'multer'
 import { SupabaseClient } from '@supabase/supabase-js'
 import type { Request, Response, NextFunction } from "express";
 import { multilingualQueue } from "@/lib/multilingual.queue";
+import { v4 as uuidv4 } from 'uuid';
+import * as emailService from "../../services/email.service";
+import prisma from "@team-call-of-code/db";
 
 function parseData(req: Request, res: Response, next: NextFunction) {
     if (req.body.data) {
@@ -60,6 +64,19 @@ export default function citizenRouter(
                 text:grievance.originalText
             })
 
+                // Send confirmation email
+                if (req.user?.id) {
+                    const user = await prisma.user.findUnique({ where: { id: req.user.id }, select: { email: true } });
+                    console.log(`[AUTH] Grievance created by user ${req.user.id}. Email: ${user?.email}`);
+                    if (user?.email) {
+                        emailService.sendGrievanceConfirmation(user.email, grievance).catch(err => {
+                            console.error(`[AUTH] Failed to send grievance confirmation:`, err);
+                        });
+                    } else {
+                        console.log(`[AUTH] No email found for user ${req.user.id}, skipping confirmation email.`);
+                    }
+                }
+
                 return res.status(201).json({
                     success: true,
                     message: "Grievance created successfully",
@@ -79,6 +96,19 @@ export default function citizenRouter(
                 grievanceId:grievance.id,
                 text:grievance.originalText
             })
+
+            // Send confirmation email
+            if (req.user?.id) {
+                const user = await prisma.user.findUnique({ where: { id: req.user.id }, select: { email: true } });
+                console.log(`[AUTH] Grievance (with file) created by user ${req.user.id}. Email: ${user?.email}`);
+                if (user?.email) {
+                    emailService.sendGrievanceConfirmation(user.email, grievance).catch(err => {
+                        console.error(`[AUTH] Failed to send grievance confirmation:`, err);
+                    });
+                } else {
+                    console.log(`[AUTH] No email found for user ${req.user.id}, skipping confirmation email.`);
+                }
+            }
 
             return res.status(202).json({
                 success: true,
@@ -170,6 +200,85 @@ export default function citizenRouter(
             res.status(200).json({
                 success: true,
                 message: "Grievance deleted successfully",
+            });
+        }),
+    );
+
+    /**
+     * @route   GET /api/v1/citizen/profile
+     * @desc    Get current citizen's profile
+     * @access  Private (Citizen)
+     */
+    citizenRouter.get(
+        "/profile",
+        asyncHandler(async (req: Request, res: Response) => {
+            const profile = await profileService.getProfile(req.user!.id);
+            res.status(200).json({
+                success: true,
+                data: profile,
+            });
+        }),
+    );
+
+    /**
+     * @route   PATCH /api/v1/citizen/profile
+     * @desc    Update citizen profile info
+     * @access  Private (Citizen)
+     */
+    citizenRouter.patch(
+        "/profile",
+        asyncHandler(async (req: Request, res: Response) => {
+            const { name, phone, address, aadhaarNumber } = req.body;
+            const profile = await profileService.updateProfile(req.user!.id, {
+                name,
+                phone,
+                address,
+                aadhaarNumber,
+            });
+            res.status(200).json({
+                success: true,
+                message: "Profile updated successfully",
+                data: profile,
+            });
+        }),
+    );
+
+    /**
+     * @route   POST /api/v1/citizen/profile/picture
+     * @desc    Upload profile picture
+     * @access  Private (Citizen)
+     */
+    citizenRouter.post(
+        "/profile/picture",
+        upload.single("photo"),
+        asyncHandler(async (req: Request, res: Response) => {
+            if (!req.file) {
+                return res.status(400).json({ success: false, message: "No file uploaded" });
+            }
+
+            const fileName = `profiles/${req.user!.id}-${uuidv4()}.${req.file.originalname.split('.').pop()}`;
+            const { data, error } = await supabase.storage
+                .from("Grievance")
+                .upload(fileName, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    upsert: true,
+                });
+
+            if (error) throw error;
+
+            const { data: publicUrl } = supabase.storage
+                .from("Grievance")
+                .getPublicUrl(fileName);
+
+            const profile = await profileService.updateProfilePicture(
+                req.user!.id,
+                publicUrl.publicUrl
+            );
+
+            res.status(200).json({
+                success: true,
+                message: "Profile picture updated",
+                data: profile,
             });
         }),
     );
