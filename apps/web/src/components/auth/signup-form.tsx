@@ -17,6 +17,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
+import { env } from "@team-call-of-code/env/web";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -128,7 +129,7 @@ export function SignupForm() {
       if (data.phone?.trim()) payload.phone = data.phone;
 
       // 1. Register the user
-      const response = await fetch("http://localhost:3000/api/v1/auth/signup", {
+      const response = await fetch(`${env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -145,7 +146,7 @@ export function SignupForm() {
         setRegisteredEmail(data.email);
         setIsSendingOtp(true);
 
-        const otpRes = await fetch("http://localhost:3000/api/v1/auth/send-otp", {
+        const otpRes = await fetch(`${env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/send-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: data.email }),
@@ -188,7 +189,7 @@ export function SignupForm() {
 
     setIsVerifyingOtp(true);
     try {
-      const res = await fetch("http://localhost:3000/api/v1/auth/verify-otp", {
+      const res = await fetch(`${env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: registeredEmail, otp: otpString }),
@@ -216,7 +217,7 @@ export function SignupForm() {
   async function handleResendOtp() {
     setIsSendingOtp(true);
     try {
-      const res = await fetch("http://localhost:3000/api/v1/auth/send-otp", {
+      const res = await fetch(`${env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: registeredEmail }),
