@@ -1,15 +1,15 @@
 import { Redis } from 'ioredis';
 import { env } from "@team-call-of-code/env/server";
 
-console.log('[REDIS] Checking environment...');
-if (env.REDIS_URL) {
-  console.log('[REDIS] Found REDIS_URL in environment');
+console.log('[DEBUG] Available Environment Keys:', Object.keys(process.env).join(', '));
+if (process.env.REDIS_URL) {
+  console.log('[REDIS] Found REDIS_URL in process.env');
 } else {
-  console.log('[REDIS] REDIS_URL is MISSING in environment. Falling back to localhost.');
+  console.log('[REDIS] REDIS_URL is MISSING in process.env');
 }
 
-export const redis = env.REDIS_URL
-  ? new Redis(env.REDIS_URL, { maxRetriesPerRequest: null })
+export const redis = process.env.REDIS_URL
+  ? new Redis(process.env.REDIS_URL, { maxRetriesPerRequest: null })
   : new Redis({
     host: '127.0.0.1',
     port: 6379,
