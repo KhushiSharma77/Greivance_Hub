@@ -19,6 +19,11 @@ async function sendEmailViaBrevo(to: string, subject: string, html: string) {
     const apiKey = env.BREVO_API_KEY;
     const senderEmail = process.env.SMTP_EMAIL || "khushisharma4628@gmail.com";
 
+    // Debugging (Safe: doesn't print the whole key)
+    console.log(`[DEBUG] Brevo Key length: ${apiKey?.length || 0}`);
+    console.log(`[DEBUG] Brevo Key starts with xkeysib: ${apiKey?.startsWith('xkeysib-')}`);
+    if (apiKey === 'dummy') console.warn(`[WARNING] Brevo Key is still the 'dummy' value!`);
+
     const response = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
         headers: {

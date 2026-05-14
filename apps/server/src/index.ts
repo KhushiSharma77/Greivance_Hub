@@ -18,6 +18,9 @@ export const supabase = createClient(
 
 const app = express();
 
+// Trust proxy (required for Render/Vercel to identify client IP correctly)
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: env.CORS_ORIGIN,
