@@ -28,7 +28,10 @@ async function getTransporter(): Promise<nodemailer.Transporter> {
     // If real Gmail credentials exist, use them
     if (smtpEmail && smtpPassword && !smtpEmail.includes("your_")) {
         cachedTransporter = nodemailer.createTransport({
-            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
+            family: 4,
             auth: {
                 user: smtpEmail,
                 pass: smtpPassword,

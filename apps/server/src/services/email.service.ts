@@ -12,7 +12,10 @@ async function getTransporter(): Promise<nodemailer.Transporter> {
 
     if (smtpEmail && smtpPassword && !smtpEmail.includes("your_")) {
         cachedTransporter = nodemailer.createTransport({
-            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
+            family: 4,
             auth: { user: smtpEmail, pass: smtpPassword },
         });
         console.log(`[EMAIL] Gmail transporter created`);
