@@ -12,37 +12,39 @@ function generateOTP(): string {
 }
 
 /**
- * Send email using Resend HTTP API (works on Render, unlike SMTP)
+ * Send email using Brevo HTTP API (sends to ANY email, no domain needed)
  */
-async function sendEmailViaResend(to: string, subject: string, html: string) {
-    const apiKey = process.env.RESEND_API_KEY;
+async function sendEmailViaBrevo(to: string, subject: string, html: string) {
+    const apiKey = process.env.BREVO_API_KEY;
+    const senderEmail = process.env.SMTP_EMAIL || "khushisharma4628@gmail.com";
+
     if (!apiKey) {
-        console.error("[EMAIL] RESEND_API_KEY is not set!");
-        throw new Error("Email service not configured. Set RESEND_API_KEY.");
+        console.error("[EMAIL] BREVO_API_KEY is not set!");
+        throw new Error("Email service not configured. Set BREVO_API_KEY.");
     }
 
-    const response = await fetch("https://api.resend.com/emails", {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${apiKey}`,
+            "api-key": apiKey,
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            from: "GrievanceHub <onboarding@resend.dev>",
-            to: [to],
+            sender: { name: "GrievanceHub", email: senderEmail },
+            to: [{ email: to }],
             subject,
-            html,
+            htmlContent: html,
         }),
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-        console.error("[EMAIL] Resend error:", result);
+        console.error("[EMAIL] Brevo error:", result);
         throw new Error(result.message || "Failed to send email");
     }
 
-    console.log(`[EMAIL] Sent successfully to ${to}, id: ${result.id}`);
+    console.log(`[EMAIL] Sent successfully to ${to}, messageId: ${result.messageId}`);
     return result;
 }
 
@@ -55,7 +57,7 @@ export async function sendEmailOTP(email: string): Promise<string | null> {
     // Store OTP in Redis with TTL (5 min expiry)
     await redis.set(`${OTP_PREFIX}${email}`, otp, "EX", OTP_EXPIRY_SECONDS);
 
-    await sendEmailViaResend(
+    await sendEmailViaBrevo(
         email,
         "Your GrievanceHub Verification Code",
         `
