@@ -31,19 +31,16 @@ export async function routingProcessor(job: Job) {
     originalText,
   } = grievance;
 
-  // 2️⃣ Validate location (required for city inference)
-  if (latitude == null || longitude == null) {
-    throw new Error(
-      `Missing location data for grievance ${grievanceId}`
-    );
-  }
+  // 2️⃣ Use location if available, otherwise route without city constraint
+  const effectiveLat = latitude ?? 0;
+  const effectiveLng = longitude ?? 0;
 
   // 3️⃣ Call Gemini routing service
   const routingResult = await routeGrievanceText({
     normalizedText: translatedText ?? originalText,
     category: category ?? undefined,
-    latitude,
-    longitude,
+    latitude: effectiveLat,
+    longitude: effectiveLng,
   });
 
   // 4️⃣ Confidence guard
@@ -53,11 +50,16 @@ export async function routingProcessor(job: Job) {
     );
   }
 
-  // 5️⃣ Emit routing success event
+  // 5️⃣ Use "General" as city if no location was provided
+  const effectiveCity = (latitude == null || longitude == null)
+    ? "General"
+    : routingResult.city;
+
+  // 6️⃣ Emit routing success event
   await routingEvents.onRouted({
     grievanceId,
     departmentName: routingResult.department,
-    city: routingResult.city,
+    city: effectiveCity,
     category: routingResult.category,
     priority: routingResult.priority as PriorityLevel,
   });

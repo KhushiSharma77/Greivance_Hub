@@ -264,7 +264,7 @@ export default function UserDashboard() {
                                                     <Eye className="w-4 h-4" />
                                                     View
                                                 </Button>
-                                                {grievance.status === "PENDING" && (
+                                                {(grievance.status === "PENDING" || grievance.status === "ANALYZED") && (
                                                     <>
                                                         <Button
                                                             variant="outline"
