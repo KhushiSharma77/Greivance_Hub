@@ -1,4 +1,3 @@
-import nodemailer from "nodemailer";
 import { redis } from "../lib/redisconnection";
 import { ValidationError } from "../lib/error-handler";
 
@@ -13,48 +12,38 @@ function generateOTP(): string {
 }
 
 /**
- * Create a nodemailer transporter
- * Uses Ethereal (free test email) if no SMTP credentials are configured.
- * Uses Gmail if real SMTP credentials are provided.
+ * Send email using Resend HTTP API (works on Render, unlike SMTP)
  */
-let cachedTransporter: nodemailer.Transporter | null = null;
-
-async function getTransporter(): Promise<nodemailer.Transporter> {
-    if (cachedTransporter) return cachedTransporter;
-
-    const smtpEmail = process.env.SMTP_EMAIL;
-    const smtpPassword = process.env.SMTP_PASSWORD;
-
-    // If real Gmail credentials exist, use them
-    if (smtpEmail && smtpPassword && !smtpEmail.includes("your_")) {
-        cachedTransporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false,
-            family: 4,
-            auth: {
-                user: smtpEmail,
-                pass: smtpPassword,
-            },
-        });
-        console.log("[EMAIL] Using Gmail SMTP");
-        return cachedTransporter;
+async function sendEmailViaResend(to: string, subject: string, html: string) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+        console.error("[EMAIL] RESEND_API_KEY is not set!");
+        throw new Error("Email service not configured. Set RESEND_API_KEY.");
     }
 
-    // Otherwise, use Ethereal (free test email — no config needed!)
-    const testAccount = await nodemailer.createTestAccount();
-    cachedTransporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false,
-        auth: {
-            user: testAccount.user,
-            pass: testAccount.pass,
+    const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+            from: "GrievanceHub <onboarding@resend.dev>",
+            to: [to],
+            subject,
+            html,
+        }),
     });
-    console.log("[EMAIL] Using Ethereal test email (no real emails sent)");
-    console.log(`[EMAIL] Ethereal credentials: ${testAccount.user} / ${testAccount.pass}`);
-    return cachedTransporter;
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        console.error("[EMAIL] Resend error:", result);
+        throw new Error(result.message || "Failed to send email");
+    }
+
+    console.log(`[EMAIL] Sent successfully to ${to}, id: ${result.id}`);
+    return result;
 }
 
 /**
@@ -66,13 +55,10 @@ export async function sendEmailOTP(email: string): Promise<string | null> {
     // Store OTP in Redis with TTL (5 min expiry)
     await redis.set(`${OTP_PREFIX}${email}`, otp, "EX", OTP_EXPIRY_SECONDS);
 
-    const transporter = await getTransporter();
-
-    const info = await transporter.sendMail({
-        from: `"GrievanceHub" <noreply@grievancehub.in>`,
-        to: email,
-        subject: "Your GrievanceHub Verification Code",
-        html: `
+    await sendEmailViaResend(
+        email,
+        "Your GrievanceHub Verification Code",
+        `
             <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
                 <h2 style="color: #1e293b; margin-bottom: 8px;">Verify your email</h2>
                 <p style="color: #64748b; font-size: 14px;">Use the code below to complete your GrievanceHub registration:</p>
@@ -81,19 +67,13 @@ export async function sendEmailOTP(email: string): Promise<string | null> {
                 </div>
                 <p style="color: #94a3b8; font-size: 12px;">This code expires in 5 minutes. If you didn't request this, please ignore this email.</p>
             </div>
-        `,
-    });
-
-    // Log preview URL for Ethereal (viewable in browser!)
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    if (previewUrl) {
-        console.log(`\n📧 [OTP EMAIL PREVIEW] View the email here:\n   ${previewUrl}\n`);
-    }
+        `
+    );
 
     console.log(`[OTP] Code for ${email}: ${otp}`);
-
-    return previewUrl ? String(previewUrl) : null;
+    return null;
 }
+
 
 /**
  * Verify OTP
