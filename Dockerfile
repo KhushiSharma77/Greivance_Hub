@@ -17,6 +17,7 @@ ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" \
     SUPABASE_URL="https://dummy.supabase.co" \
     SUPABASE_SERVICE_ROLE_KEY="dummy_key" \
     NEXT_PUBLIC_SERVER_URL="http://localhost:3000" \
+    BREVO_API_KEY="dummy" \
     NODE_ENV="production"
 
 # Generate Prisma Client
@@ -26,6 +27,7 @@ RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" \
     SUPABASE_URL="https://dummy.supabase.co" \
     SUPABASE_SERVICE_ROLE_KEY="dummy_key" \
     NEXT_PUBLIC_SERVER_URL="http://localhost:3000" \
+    BREVO_API_KEY="dummy" \
     bun run db:generate
 
 # Build the project
@@ -35,6 +37,7 @@ RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" \
     SUPABASE_URL="https://dummy.supabase.co" \
     SUPABASE_SERVICE_ROLE_KEY="dummy_key" \
     NEXT_PUBLIC_SERVER_URL="http://localhost:3000" \
+    BREVO_API_KEY="dummy" \
     bun run build
 
 # Expose the port

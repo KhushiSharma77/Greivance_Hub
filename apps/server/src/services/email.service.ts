@@ -1,15 +1,11 @@
+import { env } from "@team-call-of-code/env/server";
+
 /**
  * Send email using Brevo HTTP API (works on Render)
  */
 async function sendEmailViaBrevo(to: string, subject: string, html: string) {
-    const apiKey = process.env.BREVO_API_KEY;
+    const apiKey = env.BREVO_API_KEY;
     const senderEmail = process.env.SMTP_EMAIL || "khushisharma4628@gmail.com";
-
-    if (!apiKey) {
-        console.error("[EMAIL] BREVO_API_KEY is not set!");
-        // During build, don't crash, just log. In production, we need the key.
-        return { success: false, message: "API Key missing" };
-    }
 
     const response = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",

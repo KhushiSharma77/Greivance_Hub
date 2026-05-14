@@ -11,6 +11,7 @@ export const env = createEnv({
     SUPABASE_URL: z.string(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
     REDIS_URL: z.string().optional(),
+    BREVO_API_KEY: z.string().min(1),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

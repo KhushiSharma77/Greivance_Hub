@@ -1,8 +1,9 @@
 import { redis } from "../lib/redisconnection";
 import { ValidationError } from "../lib/error-handler";
+import { env } from "@team-call-of-code/env/server";
 
-const OTP_EXPIRY_SECONDS = 300; // 5 minutes
 const OTP_PREFIX = "otp:";
+const OTP_EXPIRY_SECONDS = 300; // 5 minutes
 
 /**
  * Generate a 6-digit OTP
@@ -12,16 +13,11 @@ function generateOTP(): string {
 }
 
 /**
- * Send email using Brevo HTTP API (sends to ANY email, no domain needed)
+ * Send email using Brevo HTTP API (works on Render)
  */
 async function sendEmailViaBrevo(to: string, subject: string, html: string) {
-    const apiKey = process.env.BREVO_API_KEY;
+    const apiKey = env.BREVO_API_KEY;
     const senderEmail = process.env.SMTP_EMAIL || "khushisharma4628@gmail.com";
-
-    if (!apiKey) {
-        console.error("[EMAIL] BREVO_API_KEY is not set!");
-        throw new Error("Email service not configured. Set BREVO_API_KEY.");
-    }
 
     const response = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
