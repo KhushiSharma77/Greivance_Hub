@@ -2,6 +2,7 @@ import { Job } from 'bullmq';
 import prisma from '@team-call-of-code/db';
 import { routingEvents } from '../events/routing.events';
 import { routeGrievanceText } from '../services/routing.service';
+import { PriorityLevel } from '@team-call-of-code/db';
 
 export async function routingProcessor(job: Job) {
   const { grievanceId } = job.data;
@@ -30,23 +31,23 @@ export async function routingProcessor(job: Job) {
     originalText,
   } = grievance;
 
-  // 2️⃣ Validate required fields
-  if (!category || latitude == null || longitude == null) {
+  // 2️⃣ Validate location (required for city inference)
+  if (latitude == null || longitude == null) {
     throw new Error(
-      `Missing routing data for grievance ${grievanceId}`
+      `Missing location data for grievance ${grievanceId}`
     );
   }
 
   // 3️⃣ Call Gemini routing service
   const routingResult = await routeGrievanceText({
     normalizedText: translatedText ?? originalText,
-    category,
+    category: category ?? undefined,
     latitude,
     longitude,
   });
 
-  // 4️⃣ Confidence guard (important)
-  if (routingResult.confidence < 0.6) {
+  // 4️⃣ Confidence guard
+  if (routingResult.confidence < 0.3) { // Lowered slightly to allow more AI autonomy
     throw new Error(
       `Low routing confidence (${routingResult.confidence})`
     );
@@ -57,6 +58,8 @@ export async function routingProcessor(job: Job) {
     grievanceId,
     departmentName: routingResult.department,
     city: routingResult.city,
+    category: routingResult.category,
+    priority: routingResult.priority as PriorityLevel,
   });
 
   return {

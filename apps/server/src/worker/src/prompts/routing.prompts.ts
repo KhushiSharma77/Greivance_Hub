@@ -1,52 +1,37 @@
 export const ROUTING_PROMPT = (
   complaintText: string,
-  category: string,
+  category: string | undefined,
   latitude: number,
   longitude: number
 ) => `
-You are an AI system assisting a government grievance redressal platform.
+You are an AI system for a government grievance platform called GrievanceHub.
 
-Your task is to:
-1. Infer the CITY or LOCALITY from the given latitude and longitude.
-2. Assign the MOST APPROPRIATE government department based on the grievance category.
-3. Return ONLY valid JSON. No explanations. No markdown.
+TASK:
+1. Analyze the complaint text and determine the most appropriate Department.
+2. Infer the City or Locality from the coordinates.
+3. Assign a Priority Level (Low, Medium, High).
+4. Categorize the issue if the current category is vague or missing.
 
-IMPORTANT RULES:
-- Use geographic reasoning to infer the city/region.
-- Do NOT guess randomly. If unsure, use "Unknown".
-- Department assignment MUST follow the mapping below.
-- Do NOT invent new departments.
-- Output must be machine-readable JSON only.
+DEPARTMENT LIST (Only choose from these EXACT names):
+- Public Works Department (PWD) (For: Roads, street lights, potholes, infrastructure)
+- Water Supply & Sewerage Board (For: Water leakage, drainage, sewage, water quality)
+- State Electricity Board (For: Power cuts, dangerous wires, transformers)
+- Municipal Corporation (Solid Waste) (For: Garbage, waste dumping, cleanliness)
+- Traffic Police (For: Traffic jams, illegal parking, signals)
+- Environment & Forest Department (For: Pollution, tree cutting, parks)
+- General Administration (For: Everything else)
 
-CATEGORY → DEPARTMENT MAPPING (INDIAN CIVIC DEPARTMENTS ONLY):
-- Roads & Infrastructure → Public Works Department (PWD)
-- Water Supply & Sanitation → Water Supply & Sewerage Board
-- Electricity & Power → State Electricity Board
-- Garbage & Waste → Municipal Corporation (Solid Waste)
-- Traffic & Vehicles → Traffic Police / RTO
-- Pollution & Environment → Environment & Forest Department
-- General / Other → General Administration
+INPUT:
+Text: "${complaintText}"
+Current Category: "${category || "None"}"
+Location: ${latitude}, ${longitude}
 
-INPUT DATA:
-Complaint:
-"${complaintText}"
-
-Category:
-"${category}"
-
-Location Coordinates:
-Latitude: ${latitude}
-Longitude: ${longitude}
-
-RETURN JSON IN EXACTLY THIS FORMAT:
+OUTPUT JSON FORMAT (NO MARKDOWN, NO EXPLANATIONS, JUST JSON):
 {
-  "city": "",
-  "department": "",
-  "confidence": 0
+  "city": "String",
+  "department": "String (EXACT name from list)",
+  "category": "String (Short refined category)",
+  "priority": "Low | Medium | High",
+  "confidence": 0.0 to 1.0
 }
-
-CONSTRAINTS:
-- city must be a string (e.g., "Pune", "Mumbai", "Delhi", or "Unknown")
-- department must be EXACTLY one from the mapping
-- confidence must be a number between 0 and 1
 `;

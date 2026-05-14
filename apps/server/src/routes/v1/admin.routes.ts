@@ -176,4 +176,22 @@ adminRouter.delete(
     }),
 );
 
+/**
+ * @route   GET /api/v1/admin/grievances
+ * @desc    Get all grievances in the system
+ * @access  Private (Admin)
+ */
+adminRouter.get(
+    "/grievances",
+    asyncHandler(async (_req: Request, res: Response) => {
+        const grievances = await adminService.getAllGrievances();
+
+        res.status(200).json({
+            success: true,
+            message: "All grievances retrieved successfully",
+            data: grievances,
+        });
+    }),
+);
+
 export default adminRouter;

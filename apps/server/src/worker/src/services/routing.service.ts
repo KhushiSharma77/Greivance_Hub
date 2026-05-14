@@ -6,12 +6,14 @@ import { extractJsonFromText } from "../utils/extractJson";
 type RoutingResult = {
   city: string;
   department: string;
+  category: string;
+  priority: string;
   confidence: number;
 };
 
 export async function routeGrievanceText(params: {
   normalizedText: string;
-  category: string;
+  category: string | undefined;
   latitude: number;
   longitude: number;
 }): Promise<RoutingResult> {
@@ -43,6 +45,8 @@ export async function routeGrievanceText(params: {
     return {
       city: data.city || "Unknown",
       department: data.department,
+      category: data.category || category || "General",
+      priority: data.priority || "Medium",
       confidence: data.confidence,
     };
   } catch (err) {

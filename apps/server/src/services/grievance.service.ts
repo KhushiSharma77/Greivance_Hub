@@ -2,6 +2,7 @@ import prisma, { Prisma } from "@team-call-of-code/db";
 import { ForbiddenError, NotFoundError } from "../lib/error-handler";
 import { uploadFile } from "../utils/imageUtils";
 import { supabase } from "../index";
+import { grievanceQueue } from "../worker/src/queues/grievance.queue";
 
 type MulterFile = Express.Multer.File;
 
@@ -73,6 +74,12 @@ export async function createGrievance(data: CreateGrievanceData, file?: MulterFi
             },
             department: true,
         },
+    });
+    
+    // Add to processing queue for AI analysis and routing
+    await grievanceQueue.add("process-grievance", {
+        grievanceId: grievance.id,
+        text: grievance.originalText,
     });
 
     return grievance;

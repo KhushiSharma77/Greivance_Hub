@@ -301,3 +301,50 @@ export async function removeOfficerFromDepartment(officerId: string): Promise<vo
         },
     });
 }
+
+/**
+ * Get all grievances in the system
+ */
+export async function getAllGrievances(): Promise<Prisma.GrievanceGetPayload<{
+    include: {
+        user: {
+            select: {
+                id: true;
+                name: true;
+                email: true;
+            };
+        };
+        department: true;
+        assignedOfficer: {
+            select: {
+                id: true;
+                name: true;
+                email: true;
+            };
+        };
+    };
+}>[]> {
+    const grievances = await prisma.grievance.findMany({
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
+            },
+            department: true,
+            assignedOfficer: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
+            },
+        },
+        orderBy: { createdAt: "desc" },
+    });
+
+    return grievances;
+}
+

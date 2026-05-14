@@ -24,7 +24,9 @@ export type DuplicateCheckedEvent = {
 export type GrievanceRoutedEvent = {
   grievanceId: string;
   departmentName: string;
-  city:string;
+  city: string;
+  category?: string;
+  priority?: PriorityLevel;
 };
 
 export type MultilingualProcessedEvent = {

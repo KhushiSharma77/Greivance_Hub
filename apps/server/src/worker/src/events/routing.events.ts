@@ -4,12 +4,14 @@ import type { GrievanceRoutedEvent } from '../types/events.types';
 export const routingEvents = {
  
   async onRouted(event: GrievanceRoutedEvent) {
-    const { grievanceId, departmentName, city } = event;
+    const { grievanceId, departmentName, city, category, priority } = event;
 
     console.log('[EVENT] Grievance Routed:', {
       grievanceId,
       departmentName,
       city,
+      category,
+      priority
     });
 
     // 1️⃣ Resolve department ID safely
@@ -41,15 +43,13 @@ export const routingEvents = {
       await tx.grievance.update({
         where: { id: grievanceId },
         data: {
-          departmentId: department.id,
-          status: 'IN_PROGRESS',
+          departmentId: department?.id,
+          category: category,
+          priority: priority,
+          status: 'ANALYZED', // Changed to ANALYZED so user knows AI finished
         },
       });
-
     });
-
-    // 3️⃣ Optional async side effects
-    // notifyDepartment(department.id, grievanceId);
   },
 
   
@@ -64,12 +64,9 @@ export const routingEvents = {
       await tx.grievance.update({
         where: { id: grievanceId },
         data: {
-          status: 'ANALYZED',
+          status: 'PENDING',
         },
       });
-
-      
-      
     });
   },
 };

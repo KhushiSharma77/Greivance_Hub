@@ -314,6 +314,20 @@ export const api = {
         }
     },
 
+    async adminGetAllGrievances() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/admin/grievances`, {
+                headers: this.getAuthHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new ApiError(data.error?.message || "Failed to fetch grievances", response.status);
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError("Network error while fetching grievances");
+        }
+    },
+
     // Profile API methods
     async getProfile() {
         try {
