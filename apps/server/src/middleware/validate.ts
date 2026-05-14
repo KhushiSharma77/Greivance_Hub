@@ -7,7 +7,7 @@ import { ValidationError } from "../lib/error-handler";
  * Validates request body, query, or params against Zod schema
  */
 export const validate = (schema: any) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, _res: Response, next: NextFunction) => {
         try {
             const result = await schema.parseAsync({
                 body: req.body,
@@ -42,7 +42,7 @@ export const validate = (schema: any) => {
  * Validate only request body
  */
 export const validateBody = (schema: any) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, _res: Response, next: NextFunction) => {
         try {
             console.log("=== Validating request body ===");
             console.log("Body before validation:", JSON.stringify(req.body, null, 2));
@@ -82,7 +82,7 @@ export const validateBody = (schema: any) => {
  * Validate only query parameters
  */
 export const validateQuery = (schema: any) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, _res: Response, next: NextFunction) => {
         try {
             req.query = await schema.parseAsync(req.query);
             next();
@@ -110,7 +110,7 @@ export const validateQuery = (schema: any) => {
  * Validate only route parameters
  */
 export const validateParams = (schema: any) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, _res: Response, next: NextFunction) => {
         try {
             req.params = await schema.parseAsync(req.params);
             next();

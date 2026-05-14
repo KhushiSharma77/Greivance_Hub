@@ -1,5 +1,4 @@
 import { Redis } from 'ioredis';
-import { env } from "@team-call-of-code/env/server";
 
 console.log('[DEBUG] Available Environment Keys:', Object.keys(process.env).join(', '));
 if (process.env.REDIS_URL) {

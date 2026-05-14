@@ -69,7 +69,10 @@ export default function citizenRouter(
                     const user = await prisma.user.findUnique({ where: { id: req.user.id }, select: { email: true } });
                     console.log(`[AUTH] Grievance created by user ${req.user.id}. Email: ${user?.email}`);
                     if (user?.email) {
-                        emailService.sendGrievanceConfirmation(user.email, grievance).catch(err => {
+                        emailService.sendGrievanceConfirmation(user.email, {
+                            ...grievance,
+                            category: grievance.category || undefined
+                        }).catch(err => {
                             console.error(`[AUTH] Failed to send grievance confirmation:`, err);
                         });
                     } else {
@@ -102,7 +105,10 @@ export default function citizenRouter(
                 const user = await prisma.user.findUnique({ where: { id: req.user.id }, select: { email: true } });
                 console.log(`[AUTH] Grievance (with file) created by user ${req.user.id}. Email: ${user?.email}`);
                 if (user?.email) {
-                    emailService.sendGrievanceConfirmation(user.email, grievance).catch(err => {
+                    emailService.sendGrievanceConfirmation(user.email, {
+                        ...grievance,
+                        category: grievance.category || undefined
+                    }).catch(err => {
                         console.error(`[AUTH] Failed to send grievance confirmation:`, err);
                     });
                 } else {
@@ -257,7 +263,7 @@ export default function citizenRouter(
             }
 
             const fileName = `profiles/${req.user!.id}-${uuidv4()}.${req.file.originalname.split('.').pop()}`;
-            const { data, error } = await supabase.storage
+            const { error } = await supabase.storage
                 .from("Grievance")
                 .upload(fileName, req.file.buffer, {
                     contentType: req.file.mimetype,

@@ -17,7 +17,7 @@ export default function publicRouter() {
      */
     router.get(
         "/",
-        asyncHandler(async (req: Request, res: Response) => {
+        asyncHandler(async (_req: Request, res: Response) => {
             const feed = await socialService.getPublicFeed();
             res.status(200).json({
                 success: true,

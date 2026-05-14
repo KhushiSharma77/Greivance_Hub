@@ -8,7 +8,7 @@ type UserRole = "citizen" | "officer" | "admin";
  * Checks if user has required role(s)
  */
 export const authorize = (...allowedRoles: UserRole[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return (req: Request, _res: Response, next: NextFunction) => {
         if (!req.user) {
             return next(new UnauthorizedError("Authentication required"));
         }

@@ -45,7 +45,7 @@ adminRouter.post(
  */
 adminRouter.get(
     "/departments",
-    asyncHandler(async (req: Request, res: Response) => {
+    asyncHandler(async (_req: Request, res: Response) => {
         const departments = await adminService.getAllDepartments();
 
         res.status(200).json({
@@ -82,7 +82,7 @@ adminRouter.post(
  */
 adminRouter.get(
     "/users",
-    asyncHandler(async (req: Request, res: Response) => {
+    asyncHandler(async (_req: Request, res: Response) => {
         const users = await adminService.getAllUsers();
 
         res.status(200).json({

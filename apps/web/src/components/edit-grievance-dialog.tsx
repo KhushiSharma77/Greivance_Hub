@@ -55,6 +55,8 @@ export function EditGrievanceDialog({
     const [isListening, setIsListening] = useState(false)
     const [selectedLang, setSelectedLang] = useState('en-IN')
     
+    const [fileType, setFileType] = useState<'image' | 'video' | null>(null)
+    
     const recognitionRef = useRef<any>(null)
 
     // Setup voice recognition
@@ -90,6 +92,17 @@ export function EditGrievanceDialog({
         if (open && grievance) {
             setDescription(grievance.originalText)
             setPreviewUrl(grievance.imageUrl || null)
+            
+            // Detect if current preview is a video
+            if (grievance.imageUrl) {
+                const ext = grievance.imageUrl.split('.').pop()?.toLowerCase()
+                if (['mp4', 'webm', 'ogg', 'mov'].includes(ext || '')) {
+                    setFileType('video')
+                } else {
+                    setFileType('image')
+                }
+            }
+            
             setSelectedFile(null)
             setError(null)
             setIsListening(false)
@@ -119,11 +132,12 @@ export function EditGrievanceDialog({
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                toast.error("File size must be less than 5MB")
+            if (file.size > 50 * 1024 * 1024) {
+                toast.error("File size must be less than 50MB")
                 return
             }
             setSelectedFile(file)
+            setFileType(file.type.startsWith('video/') ? 'video' : 'image')
             const url = URL.createObjectURL(file)
             setPreviewUrl(url)
         }
@@ -132,6 +146,7 @@ export function EditGrievanceDialog({
     const handleRemoveImage = () => {
         setSelectedFile(null)
         setPreviewUrl(null)
+        setFileType(null)
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -149,7 +164,7 @@ export function EditGrievanceDialog({
             formData.append("data", JSON.stringify(data))
 
             if (selectedFile) {
-                formData.append("photo", selectedFile)
+                formData.append("attachment", selectedFile)
             }
 
             await api.updateGrievance(grievance.id, formData)
@@ -234,24 +249,28 @@ export function EditGrievanceDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="photo" className="text-base font-semibold">
-                            Photo (Optional)
+                        <Label htmlFor="attachment" className="text-base font-semibold">
+                            Evidence (Photo/Video - Optional)
                         </Label>
                         {previewUrl ? (
                             <div className="relative rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 group">
                                 <div className="relative w-full h-48">
-                                    <Image
-                                        src={previewUrl}
-                                        alt="Preview"
-                                        fill
-                                        className="object-cover"
-                                    />
+                                    {fileType === 'video' ? (
+                                        <video src={previewUrl} className="w-full h-full object-cover" controls />
+                                    ) : (
+                                        <Image
+                                            src={previewUrl}
+                                            alt="Preview"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    )}
                                 </div>
                                 <Button
                                     type="button"
                                     variant="destructive"
                                     size="icon"
-                                    className="absolute top-2 right-2"
+                                    className="absolute top-2 right-2 z-10"
                                     onClick={handleRemoveImage}
                                 >
                                     <X className="w-4 h-4" />
@@ -259,19 +278,19 @@ export function EditGrievanceDialog({
                             </div>
                         ) : (
                             <label
-                                htmlFor="photo"
+                                htmlFor="attachment"
                                 className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary transition-colors bg-slate-50 dark:bg-slate-900/50"
                             >
                                 <div className="flex flex-col items-center justify-center gap-2 text-slate-500">
                                     <Upload className="w-10 h-10" />
-                                    <p className="text-sm font-medium">Click to upload image</p>
-                                    <p className="text-xs">PNG, JPG up to 5MB</p>
+                                    <p className="text-sm font-medium">Click to upload media</p>
+                                    <p className="text-xs">Image or Video up to 50MB</p>
                                 </div>
                                 <input
-                                    id="photo"
+                                    id="attachment"
                                     type="file"
                                     className="hidden"
-                                    accept="image/*"
+                                    accept="image/*,video/*"
                                     onChange={handleFileChange}
                                 />
                             </label>

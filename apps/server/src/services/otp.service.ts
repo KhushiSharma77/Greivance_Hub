@@ -37,7 +37,7 @@ async function sendEmailViaBrevo(to: string, subject: string, html: string) {
         }),
     });
 
-    const result = await response.json();
+    const result = (await response.json()) as any;
 
     if (!response.ok) {
         console.error("[EMAIL] Brevo error:", result);

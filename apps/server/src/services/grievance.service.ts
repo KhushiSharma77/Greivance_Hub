@@ -21,7 +21,7 @@ interface UpdateGrievanceData {
 /**
  * Check if grievance belongs to user
  */
-async function checkOwnership(grievanceId: string, userId: string): Promise<void> {
+async function checkOwnership(grievanceId: string): Promise<void> {
     const grievance = await prisma.grievance.findUnique({
         where: { id: grievanceId },
         select: { userId: true },
@@ -166,7 +166,7 @@ export async function getGrievanceById(grievanceId: string): Promise<Prisma.Grie
  */
 export async function updateGrievance(
     grievanceId: string,
-    userId: string,
+    _userId: string,
     file: MulterFile | undefined,
     data: UpdateGrievanceData,
 ): Promise<Prisma.GrievanceGetPayload<{
@@ -182,7 +182,7 @@ export async function updateGrievance(
         department: true;
     };
 }>> {
-    await checkOwnership(grievanceId, userId);
+    await checkOwnership(grievanceId);
 
     // Check if grievance is in PENDING status
     const existingGrievance = await prisma.grievance.findUnique({
@@ -231,8 +231,8 @@ export async function updateGrievance(
 /**
  * Delete a grievance (only if PENDING)
  */
-export async function deleteGrievance(grievanceId: string, userId: string) {
-    await checkOwnership(grievanceId, userId);
+export async function deleteGrievance(grievanceId: string, _userId: string) {
+    await checkOwnership(grievanceId);
 
     // Check if grievance is in PENDING status
     const existingGrievance = await prisma.grievance.findUnique({

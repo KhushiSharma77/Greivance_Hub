@@ -15,7 +15,7 @@ export interface JWTPayload {
  */
 export const authenticate = async (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction,
 ) => {
     try {

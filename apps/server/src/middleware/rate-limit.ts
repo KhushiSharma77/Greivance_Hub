@@ -16,7 +16,7 @@ export const apiLimiter = rateLimit({
             message: "Too many requests from this IP, please try again later.",
         },
     },
-    handler: (req: Request, res: Response) => {
+    handler: (_req: Request, res: Response) => {
         res.status(429).json({
             success: false,
             error: {
@@ -43,7 +43,7 @@ export const authLimiter = rateLimit({
                 "Too many authentication attempts from this IP, please try again later.",
         },
     },
-    handler: (req: Request, res: Response) => {
+    handler: (_req: Request, res: Response) => {
         res.status(429).json({
             success: false,
             error: {
@@ -69,7 +69,7 @@ export const grievanceLimiter = rateLimit({
             message: "Too many grievance posts from this IP, please try again later.",
         },
     },
-    handler: (req: Request, res: Response) => {
+    handler: (_req: Request, res: Response) => {
         res.status(429).json({
             success: false,
             error: {

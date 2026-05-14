@@ -1,4 +1,4 @@
-import prisma, { Prisma } from "@team-call-of-code/db";
+import prisma from "@team-call-of-code/db";
 import { NotFoundError } from "../lib/error-handler";
 
 /**
