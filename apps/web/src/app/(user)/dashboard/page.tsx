@@ -30,7 +30,7 @@ interface Grievance {
     originalText: string;
     translatedText?: string | null;
     category?: string | null;
-    status: "PENDING" | "IN_PROGRESS" | "RESOLVED" | "REJECTED";
+    status: "PENDING" | "ANALYZED" | "IN_PROGRESS" | "RESOLVED" | "CLOSED" | "REJECTED";
     priority?: "LOW" | "MEDIUM" | "HIGH";
     createdAt: string;
     updatedAt: string;
