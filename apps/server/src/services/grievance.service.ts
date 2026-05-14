@@ -1,6 +1,6 @@
 import prisma, { Prisma } from "@team-call-of-code/db";
 import { ForbiddenError, NotFoundError } from "../lib/error-handler";
-import { uploadImage } from "../utils/imageUtils";
+import { uploadFile } from "../utils/imageUtils";
 import { supabase } from "../index";
 
 type MulterFile = Express.Multer.File;
@@ -51,7 +51,7 @@ export async function createGrievance(data: CreateGrievanceData, file?: MulterFi
 
     let imageUrl: string | undefined;
     if (file) {
-        imageUrl = await uploadImage(supabase, file, "Grievance");
+        imageUrl = await uploadFile(supabase, file, "Grievance");
     }
     const grievance = await prisma.grievance.create({
         data: {
@@ -201,8 +201,8 @@ export async function updateGrievance(
     if (file) {
         const oldImage = existingGrievance.imageUrl;
 
-        if (oldImage) imageUrl = await uploadImage(supabase, file, "Grievance", oldImage);
-        else imageUrl = await uploadImage(supabase, file, "Grievance");
+        if (oldImage) imageUrl = await uploadFile(supabase, file, "Grievance", oldImage);
+        else imageUrl = await uploadFile(supabase, file, "Grievance");
     }
 
     const grievance = await prisma.grievance.update({

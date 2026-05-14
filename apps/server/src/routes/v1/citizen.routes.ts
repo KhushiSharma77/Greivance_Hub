@@ -51,7 +51,7 @@ export default function citizenRouter(
     citizenRouter.post(
         "/grievances",
         grievanceLimiter,
-        upload.single("photo"),
+        upload.single("attachment"),
         parseData,
         asyncHandler(async (req: Request, res: Response) => {
             if (!req.file) {
@@ -167,7 +167,7 @@ export default function citizenRouter(
      */
     citizenRouter.patch(
         "/grievances/:id",
-        upload.single("photo"),
+        upload.single("attachment"),
         parseData,
         validateParams(grievanceIdSchema),
         asyncHandler(async (req: Request, res: Response) => {

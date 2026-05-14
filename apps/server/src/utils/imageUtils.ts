@@ -21,7 +21,7 @@ function extractFilePathAndNameFromUrl(fileUrl: string): {
   }
 }
 
-export async function uploadImage(
+export async function uploadFile(
   supabase: SupabaseClient,
   file: MulterFile,
   folder: string,
@@ -29,16 +29,25 @@ export async function uploadImage(
 ): Promise<string> {
   const mime = file.mimetype;
   if (!mime) throw new Error("File type is missing");
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  const allowedTypes = [
+    "image/jpeg", 
+    "image/png", 
+    "image/gif", 
+    "image/webp",
+    "video/mp4",
+    "video/webm",
+    "video/ogg",
+    "video/quicktime"
+  ];
   if (!allowedTypes.includes(mime)) {
        throw new Error(
-      "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.");
+      "Invalid file type. Only images and videos (MP4, WebM, QuickTime) are allowed.");
   }
-  const ext = mime.split("/")[1];
+  const ext = file.originalname.split('.').pop();
 
   
   if (fileUrl) {
-    await deleteImage(supabase,fileUrl);
+    await deleteFile(supabase,fileUrl);
   }
   const filename:string =  `${uuidv4()}.${ext}`;
 
@@ -52,9 +61,7 @@ export async function uploadImage(
     });
 
   if (uploadError) {
-    // throw new ApiError(`Image upload failed: ${uploadError.message}`, 500);
-     throw new Error(`Image upload failed: ${uploadError.message}`);
-
+     throw new Error(`File upload failed: ${uploadError.message}`);
   }
 
   const { data: urlData } = supabase.storage
@@ -62,15 +69,13 @@ export async function uploadImage(
     .getPublicUrl(filePath);
 
   if (!urlData?.publicUrl) {
-    // throw new ApiError("Failed to get public URL", 500);
     throw new Error("Failed to get public URL");
-
   }
 
   return urlData.publicUrl;
 }
 
-export async function deleteImage(
+export async function deleteFile(
   supabase: SupabaseClient,
   fileUrl: string,
 ): Promise<void> {
@@ -81,7 +86,6 @@ export async function deleteImage(
     .remove([filePath]);
 
   if (deleteError) {
-    // throw new ApiError(`Image deletion failed: ${deleteError.message}`, 500);
-    throw new Error(`Image deletion failed: ${deleteError.message}`);
+    throw new Error(`File deletion failed: ${deleteError.message}`);
   }
 }

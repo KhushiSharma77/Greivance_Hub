@@ -58,8 +58,9 @@ const INDIAN_LANGUAGES = [
 export default function NewGrievancePage() {
     const router = useRouter()
     const [originalText, setOriginalText] = useState("")
-    const [image, setImage] = useState<File | null>(null)
-    const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [file, setFile] = useState<File | null>(null)
+    const [filePreview, setFilePreview] = useState<string | null>(null)
+    const [fileType, setFileType] = useState<'image' | 'video' | null>(null)
     const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
     const [isLocating, setIsLocating] = useState(false)
     const [isListening, setIsListening] = useState(false)
@@ -112,15 +113,23 @@ export default function NewGrievancePage() {
         }
     }
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            setImage(file)
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0]
+        if (selectedFile) {
+            if (selectedFile.size > 50 * 1024 * 1024) {
+                toast.error("File is too large. Max 50MB allowed.")
+                return
+            }
+
+            setFile(selectedFile)
+            const isVideoFile = selectedFile.type.startsWith('video/')
+            setFileType(isVideoFile ? 'video' : 'image')
+            
             const reader = new FileReader()
             reader.onloadend = () => {
-                setImagePreview(reader.result as string)
+                setFilePreview(reader.result as string)
             }
-            reader.readAsDataURL(file)
+            reader.readAsDataURL(selectedFile)
         }
     }
 
@@ -169,9 +178,9 @@ export default function NewGrievancePage() {
             // Stringify data for the "data" field (handled by parseData middleware on server)
             formData.append("data", JSON.stringify(data));
 
-            // Add the image file if available
-            if (image) {
-                formData.append("photo", image);
+            // Add the file if available
+            if (file) {
+                formData.append("attachment", file);
             }
 
             const response = await api.createGrievance(formData)
@@ -211,30 +220,40 @@ export default function NewGrievancePage() {
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-20">
                 {/* Left Column: Media & Location */}
                 <div className="lg:col-span-1 space-y-6">
-                    {/* Image Upload */}
+                    {/* File Upload */}
                     <Card className="border-none shadow-sm overflow-hidden bg-white dark:bg-slate-900/50 backdrop-blur-sm">
                         <CardHeader className="pb-4">
-                            <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">Evidence Photo</CardTitle>
+                            <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">Evidence (Photo/Video)</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {imagePreview ? (
+                            {filePreview ? (
                                 <div className="relative group rounded-2xl overflow-hidden border-2 border-primary/20 aspect-square">
-                                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                                    {fileType === 'video' ? (
+                                        <video src={filePreview} className="w-full h-full object-cover" controls />
+                                    ) : (
+                                        <img src={filePreview} alt="Preview" className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                                    )}
                                     <button
                                         type="button"
-                                        onClick={() => { setImage(null); setImagePreview(null); }}
-                                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={() => { setFile(null); setFilePreview(null); setFileType(null); }}
+                                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
                                 </div>
                             ) : (
                                 <label className="flex flex-col items-center justify-center aspect-square rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
-                                    <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-full text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors">
-                                        <Camera className="w-8 h-8" />
+                                    <div className="flex gap-2">
+                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-full text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors">
+                                            <Camera className="w-6 h-6" />
+                                        </div>
+                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-full text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors">
+                                            <Video className="w-6 h-6" />
+                                        </div>
                                     </div>
-                                    <span className="mt-3 text-xs font-semibold text-slate-500">Click to capture or upload</span>
-                                    <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                    <span className="mt-3 text-xs font-semibold text-slate-500">Capture or upload media</span>
+                                    <span className="text-[10px] text-slate-400">Max 50MB</span>
+                                    <input type="file" accept="image/*,video/*" className="hidden" onChange={handleFileChange} />
                                 </label>
                             )}
                         </CardContent>
