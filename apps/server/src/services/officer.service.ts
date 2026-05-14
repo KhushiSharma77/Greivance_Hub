@@ -31,9 +31,18 @@ export async function getAllGrievancesByDepartment(departmentId: string): Promis
         };
     };
 }>[]> {
+    // First, get the department name for this ID
+    const dept = await prisma.department.findUnique({
+        where: { id: departmentId },
+        select: { name: true }
+    });
+
     const grievances = await prisma.grievance.findMany({
         where: {
-            departmentId,
+            OR: [
+                { departmentId: departmentId },
+                { department: { name: dept?.name || "" } }
+            ]
         },
         include: {
             user: {

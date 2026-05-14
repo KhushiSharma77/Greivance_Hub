@@ -20,10 +20,17 @@ export const routingEvents = {
         name: departmentName,
         City: city,
       },
-      select: {
-        id: true,
-      },
+      select: { id: true },
     });
+
+    // Fallback: If no city-specific department, try finding one with the same name (any city)
+    // This allows a single officer assigned to "Water Supply" to see issues from any city
+    if (!department) {
+      department = await prisma.department.findFirst({
+        where: { name: departmentName },
+        select: { id: true },
+      });
+    }
 
     // Auto-create standard department for this city if it doesn't exist
     if (!department) {
