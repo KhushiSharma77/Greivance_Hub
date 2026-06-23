@@ -225,14 +225,7 @@ GFGBQ-Team-call-of-code/
 │   ├── api/         # API layer / business logic
 ```
 
-## 👥 The Team: CallOfCode
 
-| **Name**          | **Profile**                                                  |
-| ----------------- | ------------------------------------------------------------ |
-| **Harish Narote** | [@Harish-Naruto](https://github.com/Harish-Naruto) |
-| **Samarth Lad**      | [@samrth07](https://github.com/samrth07) |
-| **Sherin Thomas**   | [@Sherin-2711](https://github.com/Sherin-2711) |
-| **shruti Jadhav**   | [@shrutiiiyet](https://github.com/shrutiiiyet) |
 
 
 ## Available Scripts
